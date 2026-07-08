@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,11 +45,12 @@
         
         .terminal-body {
             padding: 20px;
-            min-height: 400px;
+            min-height: 450px;
             line-height: 1.5;
         }
         .prompt { color: #58a6ff; }
         .command { color: #ffffff; }
+        .accent { color: #ffbd2e; }
         
         .menu-options {
             margin-top: 20px;
@@ -74,11 +76,12 @@
         .output-block {
             margin-top: 15px;
             color: #c9d1d9;
-            animation: fadeIn 0.3s ease-in;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+        .hidden {
+            display: none !important;
+        }
+        .boot-line {
+            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -91,52 +94,163 @@
         <div class="dot dot-green"></div>
     </div>
     <div class="terminal-body">
-        <div><span class="prompt">guest@tarantino-systems:~$</span> <span class="command">initialize --portfolio</span></div>
-        <div style="color: #8b949e; margin-top: 5px;">System core loaded. Welcome to the headquarters.</div>
         
-        <!-- Dynamic Output Container -->
-        <div id="terminal-output" class="output-block">
-            Select an option from the menu below to query system information...
+        <!-- Boot Screen Container -->
+        <div id="boot-screen"></div>
+
+        <!-- Main Terminal App (Hidden during boot) -->
+        <div id="main-terminal" class="hidden">
+            <div><span class="prompt">guest@tarantino-systems:~$</span> <span class="command">initialize --portfolio</span></div>
+            <div style="color: #8b949e; margin-top: 5px;">System core loaded successfully. Welcome to the headquarters.</div>
+            
+            <!-- Dynamic Output Container -->
+            <div id="terminal-output" class="output-block">
+                Select an option from the menu below to query system information...
+            </div>
+
+            <!-- Main Menu Options -->
+            <div id="main-menu" class="menu-options">
+                <button class="cli-btn" onclick="showContent('about')">[1] cat about_me.txt</button>
+                <button class="cli-btn" onclick="showContent('projects')">[2] ls -la /projects</button>
+                <button class="cli-btn" onclick="showContent('philosophy')">[3] ./show_philosophy</button>
+            </div>
+
+            <!-- Submenu for Projects (Hidden by default) -->
+            <div id="project-menu" class="menu-options hidden">
+                <button class="cli-btn" onclick="showContent('yeti_details')">--- cat yeti.md</button>
+                <button class="cli-btn" onclick="showContent('helix_details')">--- cat helix.md</button>
+                <button class="cli-btn" onclick="backToMainMenu()" style="color: #ff5f56; border-color: #ff5f56;">[Back to Main Menu]</button>
+            </div>
+
+            <!-- Submenu Generic Back Button (For entries without custom menus) -->
+            <div id="generic-back" class="menu-options hidden">
+                <button class="cli-btn" onclick="backToMainMenu()" style="color: #ff5f56; border-color: #ff5f56;">[Back to Main Menu]</button>
+            </div>
         </div>
 
-        <!-- Clickable CLI Menu for Recruiters -->
-        <div class="menu-options">
-            <button class="cli-btn" onclick="showContent('about')">[1] cat about_me.txt</button>
-            <button class="cli-btn" onclick="showContent('projects')">[2] ls -la /projects</button>
-            <button class="cli-btn" onclick="showContent('philosophy')">[3] ./show_philosophy</button>
-        </div>
     </div>
 </div>
 
 <script>
+// Boot Screen Sequence
+const bootLines = [
+    "[    0.000000] Booting Linux Core via Tarantino Architecture...",
+    "[    0.120432] Initializing x86_64 / ARM64 Translation Layer...",
+    "[    0.450119] Detecting hardware SoCs... Raspberry Pi & Custom Nodes found.",
+    "[    0.789231] Mounting virtual file systems... OK",
+    "[    1.120943] Project YETI subsystem... [ONLINE]",
+    "[    1.430211] Project HELIX core engine... [READY]",
+    "[    1.800000] Network interface initialized. Securing connection...",
+    "[    2.100000] Access granted. Launching interactive shell...\n"
+];
+
+const bootScreen = document.getElementById('boot-screen');
+const mainTerminal = document.getElementById('main-terminal');
+
+let lineIndex = 0;
+
+function printBootLine() {
+    if (lineIndex < bootLines.length) {
+        const div = document.createElement('div');
+        div.className = 'boot-line';
+        div.innerText = bootLines[lineIndex];
+        bootScreen.appendChild(div);
+        lineIndex++;
+        // Geschwindigkeit des Bootens steuern (in Millisekunden)
+        setTimeout(printBootLine, 250);
+    } else {
+        // Boot fertig, umschalten
+        setTimeout(() => {
+            bootScreen.classList.add('hidden');
+            mainTerminal.classList.remove('hidden');
+        }, 500);
+    }
+}
+
+// Start boot sequence on load
+window.onload = printBootLine;
+
+// Navigation and Content Logic
 function showContent(topic) {
     const output = document.getElementById('terminal-output');
+    const mainMenu = document.getElementById('main-menu');
+    const projectMenu = document.getElementById('project-menu');
+    const genericBack = document.getElementById('generic-back');
     
+    // Hide all menus first to handle states cleanly
+    mainMenu.classList.add('hidden');
+    projectMenu.classList.add('hidden');
+    genericBack.classList.add('hidden');
+
     if (topic === 'about') {
         output.innerHTML = `
             <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat about_me.txt</span><br><br>
             <strong>Name:</strong> Muneeb Ur Tarantino<br>
             <strong>Focus:</strong> Self-taught Systems Engineer & Builder.<br>
-            <strong>Core Expertise:</strong> Low-level architecture, Linux systems, compiler design & emulation technology.<br>
+            <strong>Core Expertise:</strong> Low-level architecture, Linux systems, compiler design & emulation technology.<br><br>
             I run my own workshop—if a solution doesn't exist on the market, I build it from scratch.
         `;
-    } else if (topic === 'projects') {
+        genericBack.classList.remove('hidden');
+    } 
+    
+    else if (topic === 'projects') {
         output.innerHTML = `
             <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">ls -la /projects</span><br><br>
             total 2<br>
             drwxr-xr-x  2 muneeb  staff   64 Jul  2026 .<br>
-            -rw-r--r--  1 muneeb  staff  102 Jun  2026 <strong>Project_YETI</strong> (Published as-is / Open Source)<br>
-            -rwxr-xr-x  1 muneeb  staff  512 Jul  2026 <strong>HELIX</strong> [STATUS: ACTIVE DEVELOPMENT]<br>
-            <br>
-            <em>Note on HELIX:</em> A revolutionary binary transformation technology designed to seamlessly port closed-source, legacy x86 Windows software onto stable Linux environments and energy-efficient ARM SoCs/IoT hardware. Solving the global Windows 10 end-of-support crisis for critical industries.
+            -rw-r--r--  1 muneeb  staff  102 Jun  2026 <span class="accent">Project_YETI</span><br>
+            -rwxr-xr-x  1 muneeb  staff  512 Jul  2026 <span class="accent">HELIX</span> [ACTIVE DEVELOPMENT]<br><br>
+            <em>System: Submenu unlocked. Select a project file below to read details.</em>
         `;
-    } else if (topic === 'philosophy') {
+        projectMenu.classList.remove('hidden'); // Show sub-menu for projects
+    } 
+    
+    else if (topic === 'yeti_details') {
+        output.innerHTML = `
+            <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/yeti.md</span><br><br>
+            <strong>Project YETI</strong><br>
+            ----------------<br>
+            * Status: Published as-is / Open Source codebase.<br>
+            * Purpose: Fully functional systems foundation framework.<br>
+            * Shifting focus: Codebase was frozen and released to allocate 100% development resources onto Project HELIX.
+        `;
+        projectMenu.classList.remove('hidden'); // Stay in project submenu
+    } 
+    
+    else if (topic === 'helix_details') {
+        output.innerHTML = `
+            <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/helix.md</span><br><br>
+            <strong>Project HELIX (Core Mission)</strong><br>
+            --------------------------------<br>
+            * Status: In Active Prototyping Phase.<br>
+            * Target: Automation of binary transformation.<br><br>
+            <strong>The Problem:</strong> The upcoming Windows 10 end-of-support is forcing critical industries to trash functional hardware due to strict Win 11 requirements, while legacy proprietary x86 control software cannot be moved.<br><br>
+            <strong>The Solution:</strong> HELIX acts as a cross-platform bridge. It ingests closed-source x86 Windows binaries and rewrites/translates them to run natively on clean Linux setups (like Mint XFCE) or ultra-efficient ARM-based SoC/IoT hardware (e.g., Raspberry Pi). Safeguards infrastructure, drastically cuts lifecycle costs, and unlocks massive hardware migrations.
+        `;
+        projectMenu.classList.remove('hidden'); // Stay in project submenu
+    } 
+    
+    else if (topic === 'philosophy') {
         output.innerHTML = `
             <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">./show_philosophy</span><br><br>
-            "I don't waste time talking about concepts—I ship code that solves critical, systemic bottlenecks. <br>
+            "I don't waste time talking about concepts—I ship code that solves critical, systemic bottlenecks.<br>
             While industries panic over forced platform migrations, I engineer the bridges to transition them safely."
         `;
+        genericBack.classList.remove('hidden');
     }
+}
+
+function backToMainMenu() {
+    const output = document.getElementById('terminal-output');
+    const mainMenu = document.getElementById('main-menu');
+    const projectMenu = document.getElementById('project-menu');
+    const genericBack = document.getElementById('generic-back');
+    
+    output.innerHTML = "Select an option from the menu below to query system information...";
+    
+    projectMenu.classList.add('hidden');
+    genericBack.classList.add('hidden');
+    mainMenu.classList.remove('hidden');
 }
 </script>
 
