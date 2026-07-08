@@ -2,31 +2,143 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>M-Tarantino's Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muneeb Ur Tarantino | Systems Engineer Portfolio</title>
     <style>
         body {
-            background-color: #121212;
-            color: #00ff00;
+            background-color: #0c0f12;
+            color: #00ff66;
             font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            margin: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        h1 {
-            border-right: 2px solid #00ff00;
-            white-space: nowrap;
+        .terminal-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             overflow: hidden;
-            animation: typing 2s steps(12, end);
         }
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        .terminal-bar {
+            background-color: #21262d;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+        
+        .terminal-body {
+            padding: 20px;
+            min-height: 400px;
+            line-height: 1.5;
+        }
+        .prompt { color: #58a6ff; }
+        .command { color: #ffffff; }
+        
+        .menu-options {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .cli-btn {
+            background-color: #21262d;
+            color: #00ff66;
+            border: 1px solid #30363d;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .cli-btn:hover {
+            background-color: #00ff66;
+            color: #0c0f12;
+            box-shadow: 0 0 10px rgba(0,255,102,0.5);
+        }
+        .output-block {
+            margin-top: 15px;
+            color: #c9d1d9;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <h1>Hello World.</h1>
+
+<div class="terminal-container">
+    <div class="terminal-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+    </div>
+    <div class="terminal-body">
+        <div><span class="prompt">guest@tarantino-systems:~$</span> <span class="command">initialize --portfolio</span></div>
+        <div style="color: #8b949e; margin-top: 5px;">System core loaded. Welcome to the headquarters.</div>
+        
+        <!-- Dynamic Output Container -->
+        <div id="terminal-output" class="output-block">
+            Select an option from the menu below to query system information...
+        </div>
+
+        <!-- Clickable CLI Menu for Recruiters -->
+        <div class="menu-options">
+            <button class="cli-btn" onclick="showContent('about')">[1] cat about_me.txt</button>
+            <button class="cli-btn" onclick="showContent('projects')">[2] ls -la /projects</button>
+            <button class="cli-btn" onclick="showContent('philosophy')">[3] ./show_philosophy</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showContent(topic) {
+    const output = document.getElementById('terminal-output');
+    
+    if (topic === 'about') {
+        output.innerHTML = `
+            <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat about_me.txt</span><br><br>
+            <strong>Name:</strong> Muneeb Ur Tarantino<br>
+            <strong>Focus:</strong> Self-taught Systems Engineer & Builder.<br>
+            <strong>Core Expertise:</strong> Low-level architecture, Linux systems, compiler design & emulation technology.<br>
+            I run my own workshop—if a solution doesn't exist on the market, I build it from scratch.
+        `;
+    } else if (topic === 'projects') {
+        output.innerHTML = `
+            <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">ls -la /projects</span><br><br>
+            total 2<br>
+            drwxr-xr-x  2 muneeb  staff   64 Jul  2026 .<br>
+            -rw-r--r--  1 muneeb  staff  102 Jun  2026 <strong>Project_YETI</strong> (Published as-is / Open Source)<br>
+            -rwxr-xr-x  1 muneeb  staff  512 Jul  2026 <strong>HELIX</strong> [STATUS: ACTIVE DEVELOPMENT]<br>
+            <br>
+            <em>Note on HELIX:</em> A revolutionary binary transformation technology designed to seamlessly port closed-source, legacy x86 Windows software onto stable Linux environments and energy-efficient ARM SoCs/IoT hardware. Solving the global Windows 10 end-of-support crisis for critical industries.
+        `;
+    } else if (topic === 'philosophy') {
+        output.innerHTML = `
+            <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">./show_philosophy</span><br><br>
+            "I don't waste time talking about concepts—I ship code that solves critical, systemic bottlenecks. <br>
+            While industries panic over forced platform migrations, I engineer the bridges to transition them safely."
+        `;
+    }
+}
+</script>
+
 </body>
 </html>
