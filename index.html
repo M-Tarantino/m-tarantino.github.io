@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muneeb Ur Tarantino | Systems Engineer Portfolio</title>
+    <meta name="description" content="Muneeb Ur Tarantino - Systems Engineer specializing in Firmware Forensics, Binary Translation x86 to ARM64, Rust, C++, Kotlin. Based in Hungen, Germany.">
+    <meta name="keywords" content="Muneeb Ur Tarantino, Systems Engineer, Firmware Forensics, Binary Translation, x86 ARM64, Rust, C++, Kotlin, Android NDK, CMake, JNI">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #0c0f12;
             color: #00ff66;
@@ -15,48 +21,108 @@
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            box-sizing: border-box;
         }
+
         .terminal-container {
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
             background-color: #161b22;
             border: 1px solid #30363d;
-            border-radius: 6px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
             overflow: hidden;
         }
+
         .terminal-bar {
             background-color: #21262d;
-            padding: 10px;
+            padding: 12px 16px;
             display: flex;
             gap: 8px;
             border-bottom: 1px solid #30363d;
+            align-items: center;
         }
+
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 13px;
+            height: 13px;
             border-radius: 50%;
         }
+
         .dot-red { background-color: #ff5f56; }
         .dot-yellow { background-color: #ffbd2e; }
         .dot-green { background-color: #27c93f; }
-        
-        .terminal-body {
-            padding: 20px;
-            min-height: 500px;
-            line-height: 1.5;
+
+        .terminal-title {
+            margin-left: 12px;
+            color: #8b949e;
+            font-size: 0.85rem;
         }
-        .prompt { color: #58a6ff; }
+
+        .terminal-body {
+            padding: 24px;
+            min-height: 520px;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 85vh;
+        }
+
+        .prompt { color: #58a6ff; font-weight: bold; }
         .command { color: #ffffff; }
-        .accent { color: #ffbd2e; }
-        .sub-accent { color: #ff79c6; }
-        
+        .accent { color: #ffbd2e; font-weight: bold; }
+        .sub-accent { color: #ff79c6; font-weight: bold; }
+        .data-label { color: #79c0ff; font-weight: bold; }
+        .data-value { color: #ffffff; }
+        .data-highlight { 
+            color: #00ff66; 
+            font-weight: bold;
+            background-color: rgba(0, 255, 102, 0.08);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .data-tech { 
+            color: #ffbd2e; 
+            font-weight: bold;
+            background-color: rgba(255, 189, 46, 0.08);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .data-status { 
+            color: #ff79c6; 
+            font-weight: bold;
+        }
+        .data-link { 
+            color: #00ff66; 
+            text-decoration: none;
+            border-bottom: 1px dotted #00ff66;
+        }
+        .data-link:hover {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+        }
+        .data-section {
+            color: #58a6ff;
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .data-divider {
+            border: none;
+            border-top: 1px dashed #30363d;
+            margin: 10px 0;
+        }
+
         .input-line {
             display: flex;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 18px;
+            padding: 8px 12px;
+            background-color: rgba(33, 38, 45, 0.5);
+            border-radius: 4px;
+            border: 1px solid #30363d;
         }
+
         .cli-input {
             background: transparent;
             border: none;
@@ -66,70 +132,178 @@
             flex: 1;
             outline: none;
             padding-left: 10px;
+            caret-color: #00ff66;
         }
-        
+
         .menu-options {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             border-top: 1px dashed #30363d;
-            padding-top: 15px;
+            padding-top: 18px;
         }
+
         .cli-btn {
             background-color: #21262d;
             color: #00ff66;
             border: 1px solid #30363d;
-            padding: 8px 14px;
+            padding: 9px 16px;
             cursor: pointer;
             font-family: 'Courier New', Courier, monospace;
-            border-radius: 4px;
+            border-radius: 5px;
             transition: all 0.2s ease;
             font-size: 0.9rem;
+            font-weight: bold;
         }
+
         .cli-btn:hover {
             background-color: #00ff66;
             color: #0c0f12;
-            box-shadow: 0 0 10px rgba(0,255,102,0.5);
+            box-shadow: 0 0 12px rgba(0,255,102,0.4);
+            transform: translateY(-1px);
         }
+
+        .cli-btn:active {
+            transform: scale(0.96);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cli-btn.active {
+            background-color: #00ff66;
+            color: #0c0f12;
+            box-shadow: 0 0 15px rgba(0,255,102,0.6);
+        }
+
+        .cli-btn.back-btn {
+            color: #ff5f56;
+            border-color: #ff5f56;
+        }
+
+        .cli-btn.back-btn:hover {
+            background-color: #ff5f56;
+            color: #0c0f12;
+            box-shadow: 0 0 12px rgba(255,95,86,0.4);
+        }
+
         .output-block {
             margin-top: 15px;
             color: #c9d1d9;
             white-space: pre-line;
         }
+
+        .output-block strong {
+            color: #79c0ff;
+        }
+
+        .output-block em {
+            color: #8b949e;
+        }
+
+        .output-block ul {
+            margin: 6px 0;
+            padding-left: 20px;
+        }
+
+        .output-block li {
+            margin-bottom: 4px;
+        }
+
         .hidden {
             display: none !important;
         }
+
         .boot-line {
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            opacity: 0;
+            animation: fadeIn 0.1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .typing-cursor::after {
+            content: '█';
+            color: #00ff66;
+            animation: blink 1s step-end infinite;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .terminal-body { padding: 14px; min-height: 400px; }
+            .cli-btn { font-size: 0.8rem; padding: 7px 10px; }
+            .menu-options { gap: 6px; }
+            .input-line { padding: 6px 8px; }
+            .cli-input { font-size: 0.9rem; }
+        }
+
+        /* Scrollbar Styling */
+        .terminal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-body::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        .terminal-body::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        .terminal-body::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
         }
     </style>
 </head>
 <body>
+
+<!-- SEO Content (hidden from view, visible to search engines) -->
+<div style="position:absolute;left:-9999px;overflow:hidden;width:1px;height:1px;" aria-hidden="true">
+    <h1>Muneeb Ur Tarantino - Systems Engineer</h1>
+    <p>Systems Engineer specializing in Firmware Forensics, Binary Translation (x86 to ARM64), and low-level systems programming. Based in Hungen, Germany.</p>
+    <p>Technical Stack: Rust, C++, Kotlin, Python, C | Android NDK, CMake, JNI, Git</p>
+    <p>Projects: HELIX (x86/x64 to Android ARM64 Game Converter), YETI (Firmware Forensics Orchestrator), Sasquatch Universal Builder, PFAT Firmware Audit Tool, Wardrive Audit Tool</p>
+    <p>Contact: muneeb.tarantino.job@gmail.com | github.com/M-Tarantino</p>
+    <p>Languages: German (Native/C2), English (Fluent/C1)</p>
+    <p>Certifications: Ethical Hacking, Cyber Security, C Programming, Hacking Advanced, Cryptography</p>
+</div>
 
 <div class="terminal-container">
     <div class="terminal-bar">
         <div class="dot dot-red"></div>
         <div class="dot dot-yellow"></div>
         <div class="dot dot-green"></div>
+        <span class="terminal-title">guest@tarantino-systems: ~</span>
     </div>
-    <div class="terminal-body">
-        
+    <div class="terminal-body" id="terminal-body">
+
         <!-- Boot Screen Container -->
         <div id="boot-screen"></div>
 
         <!-- Main Terminal App -->
         <div id="main-terminal" class="hidden">
             <div><span class="prompt">guest@tarantino-systems:~$</span> <span class="command">initialize --portfolio-v3</span></div>
-            <div style="color: #8b949e; margin-top: 5px;">Muneeb Ur Tarantino Shell v1.2.0 active. Type 'help' for manual execution.</div>
-            
+            <div style="color: #8b949e; margin-top: 6px;">Muneeb Ur Tarantino Shell v1.2.0 active. Type <span class="accent">'help'</span> for manual execution.</div>
+
             <!-- Dynamic Output Container -->
             <div id="terminal-output" class="output-block">Select an option from the menu network below or type directly into the terminal shell.</div>
 
             <!-- Real Interactive CLI Input Line -->
             <div class="input-line">
                 <span class="prompt">guest@tarantino-systems:~$</span>
-                <input type="text" id="terminal-input-field" class="cli-input" autofocus autocomplete="off" spellcheck="false">
+                <input type="text" id="terminal-input-field" class="cli-input" autofocus autocomplete="off" spellcheck="false" placeholder="Type a command...">
             </div>
 
             <!-- Main Menu Options -->
@@ -148,12 +322,12 @@
                 <button class="cli-btn" onclick="animateAndExecute('sasquatch')">--- cat sasquatch_builder.md</button>
                 <button class="cli-btn" onclick="animateAndExecute('pfat')">--- cat pfat_audit.md</button>
                 <button class="cli-btn" onclick="animateAndExecute('wardrive')">--- cat wardrive_audit.md</button>
-                <button class="cli-btn" onclick="animateAndExecute('clear')" style="color: #ff5f56; border-color: #ff5f56;">[Back to Main Menu]</button>
+                <button class="cli-btn back-btn" onclick="animateAndExecute('clear')">[Back to Main Menu]</button>
             </div>
 
             <!-- Submenu Generic Back Button -->
             <div id="generic-back" class="menu-options hidden">
-                <button class="cli-btn" onclick="animateAndExecute('clear')" style="color: #ff5f56; border-color: #ff5f56;">[Back to Main Menu]</button>
+                <button class="cli-btn back-btn" onclick="animateAndExecute('clear')">[Back to Main Menu]</button>
             </div>
         </div>
 
@@ -175,30 +349,45 @@ const bootLines = [
 const bootScreen = document.getElementById('boot-screen');
 const mainTerminal = document.getElementById('main-terminal');
 const inputField = document.getElementById('terminal-input-field');
+const terminalBody = document.getElementById('terminal-body');
 let lineIndex = 0;
+let commandHistory = [];
+let historyIndex = -1;
 
 function printBootLine() {
     if (lineIndex < bootLines.length) {
         const div = document.createElement('div');
         div.className = 'boot-line';
+        div.style.animationDelay = '0s';
         div.innerText = bootLines[lineIndex];
         bootScreen.appendChild(div);
         lineIndex++;
-        setTimeout(printBootLine, 150);
+        setTimeout(printBootLine, 180);
     } else {
         setTimeout(() => {
             bootScreen.classList.add('hidden');
             mainTerminal.classList.remove('hidden');
+            mainTerminal.classList.add('fade-in');
             inputField.focus();
-        }, 300);
+        }, 500);
     }
 }
 
 window.onload = printBootLine;
 
 // Keep focus on input field when clicking anywhere inside the terminal body
-document.querySelector('.terminal-body').addEventListener('click', () => {
-    inputField.focus();
+document.querySelector('.terminal-body').addEventListener('click', (e) => {
+    if (!e.target.classList.contains('cli-btn')) {
+        inputField.focus();
+    }
+});
+
+// Ensure buttons return focus to input after click
+document.querySelectorAll('.cli-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setTimeout(() => inputField.focus(), 50);
+    });
 });
 
 // Map short button actions to the command strings
@@ -217,17 +406,17 @@ const commandMap = {
     'help': 'help'
 };
 
-// Simulate tying effect in the input box when a button is clicked
+// Simulate typing effect in the input box when a button is clicked
 function animateAndExecute(action) {
     const targetCommand = commandMap[action] || action;
     inputField.value = '';
     let i = 0;
-    
+
     function typeChar() {
         if (i < targetCommand.length) {
             inputField.value += targetCommand.charAt(i);
             i++;
-            setTimeout(typeChar, 40); // speed of automated typing animation
+            setTimeout(typeChar, 35);
         } else {
             setTimeout(() => {
                 processCommand(targetCommand);
@@ -237,13 +426,40 @@ function animateAndExecute(action) {
     typeChar();
 }
 
-// Listen for physical Keyboard Enter press
+// Listen for physical Keyboard Enter press and Arrow keys for history
 inputField.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         const cmd = inputField.value.trim();
+        if (cmd) {
+            commandHistory.push(cmd);
+            historyIndex = -1;
+        }
         processCommand(cmd);
     }
+    else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            inputField.value = commandHistory[commandHistory.length - 1 - historyIndex];
+        }
+    }
+    else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            inputField.value = commandHistory[commandHistory.length - 1 - historyIndex];
+        } else {
+            historyIndex = -1;
+            inputField.value = '';
+        }
+    }
 });
+
+function scrollToBottom() {
+    setTimeout(() => {
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+    }, 50);
+}
 
 function processCommand(rawCmd) {
     const cmd = rawCmd.toLowerCase().trim();
@@ -251,84 +467,128 @@ function processCommand(rawCmd) {
     const mainMenu = document.getElementById('main-menu');
     const projectMenu = document.getElementById('project-menu');
     const genericBack = document.getElementById('generic-back');
-    
+
     // Clear fields
     inputField.value = '';
     mainMenu.classList.add('hidden');
     projectMenu.classList.add('hidden');
     genericBack.classList.add('hidden');
 
+    // Remove active state from all buttons
+    document.querySelectorAll('.cli-btn').forEach(btn => btn.classList.remove('active'));
+
     if (cmd === 'cat about_me.txt' || cmd === 'about' || cmd === '1') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat about_me.txt</span>
 
-<strong>Name:</strong> Muneeb Ur Tarantino[span_0](start_span)[span_0](end_span)
-<strong>Role:</strong> System-Level Engineer | Firmware Forensics | Binary Translation[span_1](start_span)[span_1](end_span)
-<strong>Location:</strong> Hungen, Germany[span_2](start_span)[span_2](end_span)
-<strong>Languages:</strong> German (Native/C2), English (Fluent/C1)[span_3](start_span)[span_3](end_span)
+<span class="data-section">┌─ PERSONAL DATA ─────────────────────────────────────┐</span>
 
-<strong>Engineering Philosophy:</strong>
-"Precision isn't obsessive - it's professional. Whether you're cutting vinyl or translating binaries, the standard is the same: zero tolerance for preventable errors. I don't stop at the assigned layer. I trace the signal through every boundary, because a bug at any link breaks the entire product.[span_4](start_span)"[span_4](end_span)
+  <span class="data-label">Name:</span>       <span class="data-highlight">Muneeb Ur Tarantino</span>
+  <span class="data-label">Role:</span>       <span class="data-highlight">System-Level Engineer</span> | Firmware Forensics | Binary Translation
+  <span class="data-label">Location:</span>   <span class="data-highlight">Hungen, Germany</span>
+  <span class="data-label">Languages:</span>  <span class="data-highlight">German (Native/C2)</span>, <span class="data-highlight">English (Fluent/C1)</span>
 
-<strong>Core Technical Stack:</strong>
-• Languages: Rust, C++, Kotlin, Python, C[span_5](start_span)[span_5](end_span)
-• Systems: Firmware Forensics, Binary Translation (x86 -> ARM64), Plugin Architectures, Zero-Copy I/O[span_6](start_span)[span_6](end_span)
-• Build Tools: CMake, JNI, Git, Agile/Kanban[span_7](start_span)[span_7](end_span)
+<span class="data-section">┌─ ENGINEERING PHILOSOPHY ────────────────────────────┐</span>
+
+  "Precision isn't obsessive — it's professional. Whether you're cutting vinyl
+  or translating binaries, the standard is the same: <span class="data-highlight">zero tolerance</span> for
+  preventable errors. I don't stop at the assigned layer. I trace the signal
+  through every boundary, because a bug at any link breaks the entire product."
+
+<span class="data-section">┌─ CORE TECHNICAL STACK ────────────────────────────────┐</span>
+
+  <span class="data-label">Languages:</span>   <span class="data-tech">Rust</span>  <span class="data-tech">C++</span>  <span class="data-tech">Kotlin</span>  <span class="data-tech">Python</span>  <span class="data-tech">C</span>
+  <span class="data-label">Systems:</span>     <span class="data-tech">Firmware Forensics</span>  <span class="data-tech">Binary Translation (x86 → ARM64)</span>
+                <span class="data-tech">Plugin Architectures</span>  <span class="data-tech">Zero-Copy I/O</span>
+  <span class="data-label">Build Tools:</span> <span class="data-tech">CMake</span>  <span class="data-tech">JNI</span>  <span class="data-tech">Git</span>  <span class="data-tech">Agile/Kanban</span>
         `;
         genericBack.classList.remove('hidden');
     } 
-    
+
     else if (cmd === 'ls -la /projects' || cmd === 'projects' || cmd === '2') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">ls -la /projects</span>
 
+<span class="data-section">┌─ REPOSITORY INDEX ────────────────────────────────────┐</span>
+
 total 5
 drwxr-xr-x  5 muneeb  staff   160 Jul 2026 .
--rwxr-xr-x  1 muneeb  staff   512 Jul 2026 <span class="accent">HELIX_poc</span> [Private / Closed Source][span_8](start_span)[span_8](end_span)
--rw-r--r--  1 muneeb  staff   240 Jun 2026 <span class="accent">YETI-Firmware-Forensics</span> [Public / Rust][span_9](start_span)[span_9](end_span)
--rw-r--r--  1 muneeb  staff   180 Jul 2026 <span class="accent">Sasquatch-Universal-Builder</span> [Public / GPL v2][span_10](start_span)[span_10](end_span)
--rw-r--r--  1 muneeb  staff   150 Jan 2026 <span class="accent">PFAT-Firmware-Audit-Tool</span> [Public / MIT][span_11](start_span)[span_11](end_span)
--rw-r--r--  1 muneeb  staff   120 Jan 2026 <span class="accent">Wardrive-Audit-Tool</span> [Public / MIT][span_12](start_span)[span_12](end_span)
 
-<em>System: Submenu unlocked. Select a project file below or type its path to read target repository architecture specs.</em>
+  <span class="data-label">[Private]</span>  <span class="data-highlight">HELIX_poc</span>              — Windows x86/x64 → Android ARM64 Game Converter
+  <span class="data-label">[Public]</span>   <span class="data-highlight">YETI-Firmware-Forensics</span> — Distributed Firmware Forensics (Rust)
+  <span class="data-label">[Public]</span>   <span class="data-highlight">Sasquatch-Universal-Builder</span> — DevOps Reverse Toolchain (Python)
+  <span class="data-label">[Public]</span>   <span class="data-highlight">PFAT-Firmware-Audit-Tool</span> — Static Security Analysis (Python)
+  <span class="data-label">[Public]</span>   <span class="data-highlight">Wardrive-Audit-Tool</span> — Wireless Security Intelligence (Python)
+
+<em>System: Submenu unlocked. Select a project file below or type its path.</em>
         `;
         projectMenu.classList.remove('hidden');
     } 
-    
+
     else if (cmd.includes('helix_poc.md') || cmd === 'helix') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/helix_poc.md</span>
 
-<span class="accent"><strong>Project HELIX — Windows x86/x64 to Android ARM64 Game Converter</strong></span>
-<strong>Stack:</strong> C++, Kotlin, CMake, JNI | 2,500+ lines[span_13](start_span)[span_13](end_span)
+<span class="data-section">┌─ PROJECT HELIX ─ Windows x86/x64 → Android ARM64 Game Converter ─┐</span>
 
-<strong>Architecture Overview:</strong>
-A high-performance game translation runtime with an extensible plugin architecture[span_14](start_span)[span_14](end_span). It converts Windows x86/x64 games into Android ARM64 APK+OBB packages[span_15](start_span)[span_15](end_span)[span_16](start_span)[span_16](end_span). 
+  <span class="data-label">Stack:</span>     <span class="data-tech">C++</span>  <span class="data-tech">Kotlin</span>  <span class="data-tech">CMake</span>  <span class="data-tech">JNI</span>  |  <span class="data-highlight">2,500+ lines</span>
+  <span class="data-label">Status:</span>    <span class="data-status">Private / Closed Source</span>
 
-<strong>Key Mechanisms Built:</strong>
-• <strong>AOT Compilation & JIT Fallback:</strong> Pre-compiles execution paths while using dynamic runtime fallback[span_17](start_span)[span_17](end_span).
-• <strong>The Padding Principle:</strong> Preserves 100% shader compatibility by copying the smallest mip-level to all higher levels, preventing fatal shader binding errors[span_18](start_span)[span_18](end_span).
-• <strong>Zero-Coupling Plugin System:</strong> Swappable modules (Execution, Graphics, Audio, Input) loaded dynamically at runtime via <span class="sub-accent">dlopen()</span>[span_19](start_span)[span_19](end_span).
-• <strong>Windows Converter Pipeline:</strong> Auto-detects PE headers, imports, section layouts, and patches IAT trampolines for API hooks[span_20](start_span)[span_20](end_span).
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  A high-performance game translation runtime with an extensible plugin
+  architecture. Converts Windows x86/x64 games into Android ARM64 APK+OBB
+  packages with full asset pipeline integration.
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+  • <span class="data-highlight">AOT Compilation & JIT Fallback</span>
+    Pre-compiles execution paths while using dynamic runtime fallback for
+    untranslated code segments.
+
+  • <span class="data-highlight">The Padding Principle</span>
+    Preserves <span class="data-highlight">100% shader compatibility</span> by copying the smallest mip-level
+    to all higher levels, preventing fatal shader binding errors.
+
+  • <span class="data-highlight">Zero-Coupling Plugin System</span>
+    Swappable modules (Execution, Graphics, Audio, Input) loaded dynamically
+    at runtime via <span class="sub-accent">dlopen()</span>.
+
+  • <span class="data-highlight">Windows Converter Pipeline</span>
+    Auto-detects PE headers, imports, section layouts, and patches IAT
+    trampolines for API hooks.
         `;
         projectMenu.classList.remove('hidden');
     } 
-    
+
     else if (cmd.includes('yeti_forensics.md') || cmd === 'yeti') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/yeti_forensics.md</span>
 
-<span class="accent"><strong>Project YETI — Distributed Firmware Forensics Orchestrator</strong></span>
-<strong>Stack:</strong> Rust v0.2 Alpha | Open Source[span_21](start_span)[span_21](end_span)
+<span class="data-section">┌─ PROJECT YETI — Distributed Firmware Forensics Orchestrator ─┐</span>
 
-<strong>Architecture Overview:</strong>
-A production-ready firmware diagnostics and forensics suite engineered specifically for embedded systems and automotive ECUs[span_22](start_span)[span_22](end_span). 
+  <span class="data-label">Stack:</span>     <span class="data-tech">Rust</span> v0.2 Alpha
+  <span class="data-label">License:</span>   <span class="data-status">Open Source</span>
 
-<strong>Key Mechanisms Built:</strong>
-• <strong>Surgical Extraction:</strong> Targeted mining of highly proprietary embedded binary structures[span_23](start_span)[span_23](end_span).
-• <strong>VFS Navigation:</strong> Implements virtual filesystem navigation and on-the-fly vendor header transformations[span_24](start_span)[span_24](end_span).
-• <strong>Orchestration Layer:</strong> Unified structural execution of <span class="sub-accent">binwalk-rs</span> and <span class="sub-accent">backhand</span> binaries[span_25](start_span)[span_25](end_span).
-• <strong>Status:</strong> Codebase published as-is on GitHub; development frozen to focus resource bandwidth 100% on HELIX[span_26](start_span)[span_26](end_span).
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  A production-ready firmware diagnostics and forensics suite engineered
+  specifically for embedded systems and automotive ECUs.
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+  • <span class="data-highlight">Surgical Extraction</span>
+    Targeted mining of highly proprietary embedded binary structures.
+
+  • <span class="data-highlight">VFS Navigation</span>
+    Implements virtual filesystem navigation and on-the-fly vendor header
+    transformations.
+
+  • <span class="data-highlight">Orchestration Layer</span>
+    Unified structural execution of <span class="sub-accent">binwalk-rs</span> and <span class="sub-accent">backhand</span> binaries.
+
+  • <span class="data-highlight">Status:</span> Codebase published as-is on GitHub; development frozen to
+    focus resource bandwidth 100% on HELIX.
         `;
         projectMenu.classList.remove('hidden');
     } 
@@ -337,15 +597,23 @@ A production-ready firmware diagnostics and forensics suite engineered specifica
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/sasquatch_builder.md</span>
 
-<span class="accent"><strong>Sasquatch Universal Builder — DevOps & Reverse Toolchain</strong></span>
-<strong>Stack:</strong> Python | GPL v2.0 License | Open Source[span_27](start_span)[span_27](end_span)
+<span class="data-section">┌─ SASQUATCH UNIVERSAL BUILDER — DevOps & Reverse Toolchain ─┐</span>
 
-<strong>Architecture Overview:</strong>
-An automated build-automation and patch orchestration quality-of-life tool designed to eliminate structural friction in hardware-hacking workflows[span_28](start_span)[span_28](end_span).
+  <span class="data-label">Stack:</span>     <span class="data-tech">Python</span>
+  <span class="data-label">License:</span>   <span class="data-status">GPL v2.0</span> | <span class="data-status">Open Source</span>
 
-<strong>Key Mechanisms Built:</strong>
-• Streamlines the building, patching, and runtime setup of complex toolchains for embedded reverse engineering[span_29](start_span)[span_29](end_span).
-• Native cross-platform stability supporting modern GCC/Clang compilers alongside mobile-tier Termux (Android) environments[span_30](start_span)[span_30](end_span).
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  An automated build-automation and patch orchestration quality-of-life tool
+  designed to eliminate structural friction in hardware-hacking workflows.
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+  • Streamlines the building, patching, and runtime setup of complex
+    toolchains for embedded reverse engineering.
+
+  • Native cross-platform stability supporting modern <span class="data-tech">GCC/Clang</span> compilers
+    alongside mobile-tier <span class="data-tech">Termux (Android)</span> environments.
         `;
         projectMenu.classList.remove('hidden');
     }
@@ -354,14 +622,22 @@ An automated build-automation and patch orchestration quality-of-life tool desig
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/pfat_audit.md</span>
 
-<span class="accent"><strong>PFAT — Professional Interactive Firmware Audit Tool</strong></span>
-<strong>Stack:</strong> Python 3 | MIT License | Open Source[span_31](start_span)[span_31](end_span)
+<span class="data-section">┌─ PFAT — Professional Interactive Firmware Audit Tool ─┐</span>
 
-<strong>Architecture Overview:</strong>
-Moving beyond monolithic, slow scanners with a modular, surgical approach to static security analysis within embedded filesystems[span_32](start_span)[span_32](end_span).
+  <span class="data-label">Stack:</span>     <span class="data-tech">Python 3</span>
+  <span class="data-label">License:</span>   <span class="data-status">MIT</span> | <span class="data-status">Open Source</span>
 
-<strong>Key Mechanisms Built:</strong>
-• Structural detection engines targeted at exposing hardcoded backend credentials, hidden private encryption keys, and active shell backdoors[span_33](start_span)[span_33](end_span).
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  Moving beyond monolithic, slow scanners with a modular, surgical approach
+  to static security analysis within embedded filesystems.
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+  • Structural detection engines targeted at exposing:
+    – Hardcoded backend credentials
+    – Hidden private encryption keys
+    – Active shell backdoors
         `;
         projectMenu.classList.remove('hidden');
     }
@@ -370,30 +646,40 @@ Moving beyond monolithic, slow scanners with a modular, surgical approach to sta
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/wardrive_audit.md</span>
 
-<span class="accent"><strong>Wardrive Audit Tool — Wireless Security Intelligence Engine</strong></span>
-<strong>Stack:</strong> Python (Standard Library Only — Zero External Dependencies) | MIT License[span_34](start_span)[span_34](end_span)
+<span class="data-section">┌─ WARDRIVE AUDIT TOOL — Wireless Security Intelligence Engine ─┐</span>
 
-<strong>Architecture Overview:</strong>
-A tailored parser and analytical suite engineered to process massive, raw Wigle wireless survey data logs[span_35](start_span)[span_35](end_span).
+  <span class="data-label">Stack:</span>     <span class="data-tech">Python</span> (Standard Library Only — <span class="data-highlight">Zero External Dependencies</span>)
+  <span class="data-label">License:</span>   <span class="data-status">MIT</span> | <span class="data-status">Open Source</span>
 
-<strong>Key Mechanisms Built:</strong>
-• Multi-threaded data processor capable of parsing 10,000+ access points simultaneously[span_36](start_span)[span_36](end_span).
-• Structural auditing mapping out active encryption weaknesses (WPA3/WPA2/WEP), WPS firmware vulnerabilities, and RF spectrum coverage anomalies[span_37](start_span)[span_37](end_span).
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  A tailored parser and analytical suite engineered to process massive, raw
+  Wigle wireless survey data logs.
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+  • <span class="data-highlight">Multi-threaded data processor</span> capable of parsing <span class="data-highlight">10,000+ access points</span>
+    simultaneously.
+
+  • Structural auditing mapping out:
+    – Active encryption weaknesses (<span class="data-tech">WPA3</span> / <span class="data-tech">WPA2</span> / <span class="data-tech">WEP</span>)
+    – WPS firmware vulnerabilities
+    – RF spectrum coverage anomalies
         `;
         projectMenu.classList.remove('hidden');
     }
-    
+
     else if (cmd === 'realpath /certifications' || cmd === 'certs' || cmd === '3') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">realpath /certifications</span>
 
-Showing verified technical training completions:
+<span class="data-section">┌─ VERIFIED TECHNICAL TRAINING COMPLETIONS ─────────────┐</span>
 
-✔ <strong>Ethical Hacking Certification Course</strong> [Dec 2021][span_38](start_span)[span_38](end_span)
-✔ <strong>Cyber Security Certification Course</strong> [Dec 2021][span_39](start_span)[span_39](end_span)
-✔ <strong>C Programming Certification Course</strong> [Dec 2021][span_40](start_span)[span_40](end_span)
-✔ <strong>Hacking Advanced Certification Course</strong> [Dec 2021][span_41](start_span)[span_41](end_span)
-✔ <strong>Cryptography Certification Course</strong> [Dec 2021][span_42](start_span)[span_42](end_span)
+  ✔ <span class="data-highlight">Ethical Hacking Certification Course</span>          [Dec 2021]
+  ✔ <span class="data-highlight">Cyber Security Certification Course</span>           [Dec 2021]
+  ✔ <span class="data-highlight">C Programming Certification Course</span>            [Dec 2021]
+  ✔ <span class="data-highlight">Hacking Advanced Certification Course</span>         [Dec 2021]
+  ✔ <span class="data-highlight">Cryptography Certification Course</span>             [Dec 2021]
         `;
         genericBack.classList.remove('hidden');
     }
@@ -402,16 +688,32 @@ Showing verified technical training completions:
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">history | grep experience</span>
 
-<strong>[System Lifecycle Trace]:</strong>
+<span class="data-section">┌─ SYSTEM LIFECYCLE TRACE ────────────────────────────┐</span>
 
-• <strong>§34a GewO Professional Qualification Studies</strong> [2023 - 2024][span_43](start_span)[span_43](end_span)
-  Client communication strategy, verbal/written corporate risk profiling[span_44](start_span)[span_44](end_span).
-• <strong>Electronic Equipment Assembler Trainee</strong> | TSP Systems GmbH [2022][span_45](start_span)[span_45](end_span)
-  Surface-mount soldering of multi-layer printed circuit boards (SMT/PCB assembly)[span_46](start_span)[span_46](end_span).
-• <strong>Technical Support Intern</strong> | Gevekom GmbH [2021 - 2022][span_47](start_span)[span_47](end_span)
-  Root-cause fault diagnostics and extensive ticket system technical documentation[span_48](start_span)[span_48](end_span).
-• <strong>Assistant Manager & Graphic Designer</strong> | CopyGigant Frankfurt [2018 - 2019][span_49](start_span)[span_49](end_span)
-  Supervised day-to-day operations[span_50](start_span)[span_50](end_span). Vector precision layout engineering (zero-tolerance alignment)[span_51](start_span)[span_51](end_span).
+  <span class="data-label">§34a GewO Professional Qualification Studies</span>
+  <span class="data-value">[2023 – 2024]</span>
+  Client communication strategy, verbal/written corporate risk profiling.
+
+  ─────────────────────────────────────────────────────
+
+  <span class="data-label">Electronic Equipment Assembler Trainee</span>
+  <span class="data-value">TSP Systems GmbH | [2022]</span>
+  Surface-mount soldering of multi-layer printed circuit boards (SMT/PCB
+  assembly).
+
+  ─────────────────────────────────────────────────────
+
+  <span class="data-label">Technical Support Intern</span>
+  <span class="data-value">Gevekom GmbH | [2021 – 2022]</span>
+  Root-cause fault diagnostics and extensive ticket system technical
+  documentation.
+
+  ─────────────────────────────────────────────────────
+
+  <span class="data-label">Assistant Manager & Graphic Designer</span>
+  <span class="data-value">CopyGigant Frankfurt | [2018 – 2019]</span>
+  Supervised day-to-day operations. Vector precision layout engineering
+  (<span class="data-highlight">zero-tolerance alignment</span>).
         `;
         genericBack.classList.remove('hidden');
     }
@@ -428,38 +730,45 @@ PING contact_gateway (127.0.0.1) 56(84) bytes of data.
 --- contact_gateway ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2004ms
 
-<strong>Establish Connection:</strong>
-• Email: <a href="mailto:muneeb.tarantino.job@gmail.com" style="color: #00ff66;">muneeb.tarantino.job@gmail.com</a>[span_52](start_span)[span_52](end_span)
-• GitHub: <a href="https://github.com/M-Tarantino" target="_blank" style="color: #00ff66;">github.com/M-Tarantino</a>[span_53](start_span)[span_53](end_span)
-• Licensing/Offers: Relocation-ready with a full, clean Class B driving licence[span_54](start_span)[span_54](end_span).
+<span class="data-section">┌─ ESTABLISH CONNECTION ────────────────────────────────┐</span>
+
+  <span class="data-label">Email:</span>     <a href="mailto:muneeb.tarantino.job@gmail.com" class="data-link">muneeb.tarantino.job@gmail.com</a>
+  <span class="data-label">GitHub:</span>    <a href="https://github.com/M-Tarantino" target="_blank" class="data-link">github.com/M-Tarantino</a>
+
+  <span class="data-label">Status:</span>    <span class="data-highlight">Relocation-ready</span> with a full, clean <span class="data-highlight">Class B driving licence</span>.
         `;
         genericBack.classList.remove('hidden');
     }
-    
+
     else if (cmd === 'clear' || cmd === 'exit') {
         output.innerHTML = "Select an option from the menu network to explore architectural systems, codebase repositories, and certifications.";
         mainMenu.classList.remove('hidden');
     }
-    
+
     else if (cmd === 'help') {
         output.innerHTML = `
 <span class="prompt">guest@tarantino-systems:~$</span> <span class="command">help</span>
 
-Available core system parameters:
-• <strong>about</strong>        - Execute profile structural analysis.
-• <strong>projects</strong>     - Inspect active/frozen code repositories.
-• <strong>certs</strong>        - List cryptographic & security certifications.
-• <strong>experience</strong>   - Dump chronological operational footprint.
-• <strong>contact</strong>      - Ping networks gateway points.
-• <strong>clear</strong>       - Return to default configuration shell.
+<span class="data-section">┌─ AVAILABLE CORE SYSTEM PARAMETERS ──────────────────┐</span>
+
+  <span class="data-label">about</span>       — Execute profile structural analysis
+  <span class="data-label">projects</span>    — Inspect active/frozen code repositories
+  <span class="data-label">certs</span>       — List cryptographic & security certifications
+  <span class="data-label">experience</span>  — Dump chronological operational footprint
+  <span class="data-label">contact</span>     — Ping network gateway points
+  <span class="data-label">clear</span>       — Return to default configuration shell
+
+<em>Tip: Use ↑ / ↓ arrow keys to navigate command history.</em>
         `;
         mainMenu.classList.remove('hidden');
     }
-    
+
     else {
         output.innerHTML = `<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">${rawCmd}</span>\n\n<span style="color: #ff5f56;">bash: command not found: ${rawCmd}. Type 'help' to scan available entry vectors.</span>`;
         mainMenu.classList.remove('hidden');
     }
+
+    scrollToBottom();
 }
 </script>
 
