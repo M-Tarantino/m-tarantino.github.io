@@ -1,0 +1,483 @@
+{
+  "profile": {
+    "name": "Muneeb Ur Tarantino",
+    "role": "System-Level Engineer | Firmware Forensics | Binary Translation",
+    "location": "Hungen, Germany",
+    "languages": [
+      {
+        "lang": "German",
+        "level": "Native/C2"
+      },
+      {
+        "lang": "English",
+        "level": "Fluent/C1"
+      }
+    ],
+    "philosophy": "Precision isn't obsessive — it's professional. Whether you're cutting vinyl or translating binaries, the standard is the same: zero tolerance for preventable errors. I don't stop at the assigned layer. I trace the signal through every boundary, because a bug at any link breaks the entire product.",
+    "stack": {
+      "languages": [
+        "Rust",
+        "C++",
+        "Kotlin",
+        "Python",
+        "C"
+      ],
+      "systems": [
+        "Firmware Forensics",
+        "Binary Translation (x86 → ARM64)",
+        "Plugin Architectures",
+        "Zero-Copy I/O"
+      ],
+      "build_tools": [
+        "CMake",
+        "JNI",
+        "Git",
+        "Agile/Kanban"
+      ]
+    }
+  },
+  "projects": {
+    "helix": {
+      "title": "Project HELIX — Windows x86/x64 to Android ARM64 Game Converter",
+      "stack": [
+        "C++",
+        "Kotlin",
+        "CMake",
+        "JNI"
+      ],
+      "lines": "2,500+",
+      "status": "Private / Closed Source",
+      "overview": "A high-performance game translation runtime with an extensible plugin architecture. Converts Windows x86/x64 games into Android ARM64 APK+OBB packages with full asset pipeline integration.",
+      "mechanisms": [
+        {
+          "name": "AOT Compilation & JIT Fallback",
+          "desc": "Pre-compiles execution paths while using dynamic runtime fallback for untranslated code segments."
+        },
+        {
+          "name": "The Padding Principle",
+          "desc": "Preserves 100% shader compatibility by copying the smallest mip-level to all higher levels, preventing fatal shader binding errors."
+        },
+        {
+          "name": "Zero-Coupling Plugin System",
+          "desc": "Swappable modules (Execution, Graphics, Audio, Input) loaded dynamically at runtime via dlopen()."
+        },
+        {
+          "name": "Windows Converter Pipeline",
+          "desc": "Auto-detects PE headers, imports, section layouts, and patches IAT trampolines for API hooks."
+        }
+      ]
+    },
+    "yeti": {
+      "title": "Project YETI — Distributed Firmware Forensics Orchestrator",
+      "stack": [
+        "Rust v0.2 Alpha"
+      ],
+      "status": "Open Source",
+      "overview": "A production-ready firmware diagnostics and forensics suite engineered specifically for embedded systems and automotive ECUs.",
+      "mechanisms": [
+        {
+          "name": "Surgical Extraction",
+          "desc": "Targeted mining of highly proprietary embedded binary structures."
+        },
+        {
+          "name": "VFS Navigation",
+          "desc": "Implements virtual filesystem navigation and on-the-fly vendor header transformations."
+        },
+        {
+          "name": "Orchestration Layer",
+          "desc": "Unified structural execution of binwalk-rs and backhand binaries."
+        },
+        {
+          "name": "Status",
+          "desc": "Codebase published as-is on GitHub; development frozen to focus resource bandwidth 100% on HELIX."
+        }
+      ]
+    },
+    "sasquatch": {
+      "title": "Sasquatch Universal Builder — DevOps & Reverse Toolchain",
+      "stack": [
+        "Python"
+      ],
+      "license": "GPL v2.0",
+      "status": "Open Source",
+      "overview": "An automated build-automation and patch orchestration quality-of-life tool designed to eliminate structural friction in hardware-hacking workflows.",
+      "mechanisms": [
+        {
+          "name": "Toolchain Automation",
+          "desc": "Streamlines the building, patching, and runtime setup of complex toolchains for embedded reverse engineering."
+        },
+        {
+          "name": "Cross-Platform",
+          "desc": "Native cross-platform stability supporting modern GCC/Clang compilers alongside mobile-tier Termux (Android) environments."
+        }
+      ]
+    },
+    "pfat": {
+      "title": "PFAT — Professional Interactive Firmware Audit Tool",
+      "stack": [
+        "Python 3"
+      ],
+      "license": "MIT",
+      "status": "Open Source",
+      "overview": "Moving beyond monolithic, slow scanners with a modular, surgical approach to static security analysis within embedded filesystems.",
+      "mechanisms": [
+        {
+          "name": "Structural Detection",
+          "desc": "Engines targeted at exposing hardcoded backend credentials, hidden private encryption keys, and active shell backdoors."
+        }
+      ]
+    },
+    "wardrive": {
+      "title": "Wardrive Audit Tool — Wireless Security Intelligence Engine",
+      "stack": [
+        "Python (Standard Library Only — Zero External Dependencies)"
+      ],
+      "license": "MIT",
+      "status": "Open Source",
+      "overview": "A tailored parser and analytical suite engineered to process massive, raw Wigle wireless survey data logs.",
+      "mechanisms": [
+        {
+          "name": "Multi-threaded Processor",
+          "desc": "Capable of parsing 10,000+ access points simultaneously."
+        },
+        {
+          "name": "Structural Auditing",
+          "desc": "Mapping out active encryption weaknesses (WPA3/WPA2/WEP), WPS firmware vulnerabilities, and RF spectrum coverage anomalies."
+        }
+      ]
+    }
+  },
+  "projects_index": [
+    {
+      "key": "helix",
+      "name": "HELIX_poc",
+      "visibility": "Private",
+      "lang": "Closed Source",
+      "desc": "Windows x86/x64 → Android ARM64 Game Converter"
+    },
+    {
+      "key": "yeti",
+      "name": "YETI-Firmware-Forensics",
+      "visibility": "Public",
+      "lang": "Rust",
+      "desc": "Distributed Firmware Forensics"
+    },
+    {
+      "key": "sasquatch",
+      "name": "Sasquatch-Universal-Builder",
+      "visibility": "Public",
+      "lang": "Python",
+      "desc": "DevOps Reverse Toolchain"
+    },
+    {
+      "key": "pfat",
+      "name": "PFAT-Firmware-Audit-Tool",
+      "visibility": "Public",
+      "lang": "Python",
+      "desc": "Static Security Analysis"
+    },
+    {
+      "key": "wardrive",
+      "name": "Wardrive-Audit-Tool",
+      "visibility": "Public",
+      "lang": "Python",
+      "desc": "Wireless Security Intelligence"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Ethical Hacking Certification Course",
+      "date": "Dec 2021"
+    },
+    {
+      "name": "Cyber Security Certification Course",
+      "date": "Dec 2021"
+    },
+    {
+      "name": "C Programming Certification Course",
+      "date": "Dec 2021"
+    },
+    {
+      "name": "Hacking Advanced Certification Course",
+      "date": "Dec 2021"
+    },
+    {
+      "name": "Cryptography Certification Course",
+      "date": "Dec 2021"
+    }
+  ],
+  "experience": [
+    {
+      "title": "§34a GewO Professional Qualification Studies",
+      "company": "",
+      "period": "2023 – 2024",
+      "desc": "Client communication strategy, verbal/written corporate risk profiling."
+    },
+    {
+      "title": "Electronic Equipment Assembler Trainee",
+      "company": "TSP Systems GmbH",
+      "period": "2022",
+      "desc": "Surface-mount soldering of multi-layer printed circuit boards (SMT/PCB assembly)."
+    },
+    {
+      "title": "Technical Support Intern",
+      "company": "Gevekom GmbH",
+      "period": "2021 – 2022",
+      "desc": "Root-cause fault diagnostics and extensive ticket system technical documentation."
+    },
+    {
+      "title": "Assistant Manager & Graphic Designer",
+      "company": "CopyGigant Frankfurt",
+      "period": "2018 – 2019",
+      "desc": "Supervised day-to-day operations. Vector precision layout engineering (zero-tolerance alignment)."
+    }
+  ],
+  "contact": {
+    "email": "muneeb.tarantino.job@gmail.com",
+    "github": "https://github.com/M-Tarantino",
+    "status": "Relocation-ready with a full, clean Class B driving licence."
+  },
+  "boot_lines": [
+    "[    0.000000] Booting Core Kernel via M-Tarantino Systems...",
+    "[    0.140221] CPU Translation Framework initialized successfully.",
+    "[    0.410984] Mapping low-level virtual memory pointers...",
+    "[    0.712033] Analyzing file boundary architectures: Game -> API -> Driver -> Firmware -> GPU...",
+    "[    1.029481] Synchronizing Project YETI forensics subsystem [OK]",
+    "[    1.310229] Unlocking Project HELIX runtime dependencies [OK]",
+    "[    1.684012] Integrity Check: Zero-tolerance engineering standards validated.",
+    "[    2.000000] Access Granted. Launching multi-tier interactive shell environment...\n"
+  ],
+  "commands": {
+    "help": {
+      "about": "Execute profile structural analysis",
+      "projects": "Inspect active/frozen code repositories",
+      "certs": "List cryptographic & security certifications",
+      "experience": "Dump chronological operational footprint",
+      "contact": "Ping network gateway points",
+      "clear": "Return to default configuration shell"
+    }
+  },
+  "ui": {
+    "menu_buttons": [
+      {
+        "action": "about",
+        "label": "[1] cat about_me.txt"
+      },
+      {
+        "action": "projects",
+        "label": "[2] ls -la /projects"
+      },
+      {
+        "action": "certs",
+        "label": "[3] realpath /certifications"
+      },
+      {
+        "action": "experience",
+        "label": "[4] history | grep experience"
+      },
+      {
+        "action": "contact",
+        "label": "[5] ping contact_gateway"
+      }
+    ],
+    "project_buttons": [
+      {
+        "action": "helix",
+        "label": "--- cat helix_poc.md"
+      },
+      {
+        "action": "yeti",
+        "label": "--- cat yeti_forensics.md"
+      },
+      {
+        "action": "sasquatch",
+        "label": "--- cat sasquatch_builder.md"
+      },
+      {
+        "action": "pfat",
+        "label": "--- cat pfat_audit.md"
+      },
+      {
+        "action": "wardrive",
+        "label": "--- cat wardrive_audit.md"
+      }
+    ],
+    "command_map": {
+      "about": "cat about_me.txt",
+      "projects": "ls -la /projects",
+      "certs": "realpath /certifications",
+      "experience": "history | grep experience",
+      "contact": "ping -c 3 contact_gateway",
+      "helix": "cat projects/helix_poc.md",
+      "yeti": "cat projects/yeti_forensics.md",
+      "sasquatch": "cat projects/sasquatch_builder.md",
+      "pfat": "cat projects/pfat_audit.md",
+      "wardrive": "cat projects/wardrive_audit.md",
+      "clear": "clear",
+      "help": "help"
+    }
+  },
+  "vnc": {
+    "desktop": {
+      "wallpaper_color": "#2c001e",
+      "wallpaper_gradient": "linear-gradient(135deg, #2c001e 0%, #1a0a2e 50%, #0d1b2a 100%)",
+      "taskbar_color": "#1e1e1e",
+      "window_title_bar": "#3c3c3c",
+      "accent_color": "#e95420"
+    },
+    "icons": [
+      {
+        "id": "about",
+        "label": "About Me",
+        "icon": "👤",
+        "color": "#e95420",
+        "window_title": "about_me.txt - Text Editor",
+        "content_type": "text",
+        "width": 520,
+        "height": 480
+      },
+      {
+        "id": "projects",
+        "label": "Projects",
+        "icon": "📁",
+        "color": "#f9c74f",
+        "window_title": "Projects - File Manager",
+        "content_type": "file_manager",
+        "width": 600,
+        "height": 450
+      },
+      {
+        "id": "helix",
+        "label": "HELIX.exe",
+        "icon": "⚙️",
+        "color": "#00ff66",
+        "window_title": "HELIX Runtime - x86→ARM64 Translator",
+        "content_type": "terminal_app",
+        "width": 700,
+        "height": 500
+      },
+      {
+        "id": "yeti",
+        "label": "YETI-Forensics",
+        "icon": "🔍",
+        "color": "#ff79c6",
+        "window_title": "YETI Forensics Suite v0.2",
+        "content_type": "terminal_app",
+        "width": 650,
+        "height": 480
+      },
+      {
+        "id": "certs",
+        "label": "Certificates",
+        "icon": "📜",
+        "color": "#58a6ff",
+        "window_title": "Certificates - Document Viewer",
+        "content_type": "text",
+        "width": 480,
+        "height": 420
+      },
+      {
+        "id": "experience",
+        "label": "Experience.log",
+        "icon": "📋",
+        "color": "#a78bfa",
+        "window_title": "experience.log - System Log",
+        "content_type": "log",
+        "width": 550,
+        "height": 460
+      },
+      {
+        "id": "contact",
+        "label": "Contact",
+        "icon": "📡",
+        "color": "#27c93f",
+        "window_title": "Network Connection Manager",
+        "content_type": "network",
+        "width": 460,
+        "height": 380
+      },
+      {
+        "id": "terminal",
+        "label": "Terminal",
+        "icon": "🖥️",
+        "color": "#0c0f12",
+        "window_title": "guest@tarantino-desktop: ~",
+        "content_type": "embedded_terminal",
+        "width": 700,
+        "height": 450
+      }
+    ],
+    "taskbar_apps": [
+      {
+        "icon": "🌐",
+        "label": "Firefox",
+        "action": "none"
+      },
+      {
+        "icon": "📁",
+        "label": "Files",
+        "action": "open_window",
+        "target": "projects"
+      },
+      {
+        "icon": "🖥️",
+        "label": "Terminal",
+        "action": "open_window",
+        "target": "terminal"
+      },
+      {
+        "icon": "⚙️",
+        "label": "Settings",
+        "action": "none"
+      }
+    ]
+  },
+  "orchestrator": {
+    "welcome_title": "Muneeb Ur Tarantino — Systems Engineer",
+    "welcome_subtitle": "Select your interface layer",
+    "options": [
+      {
+        "id": "cli",
+        "label": "Terminal Shell",
+        "description": "Interactive CLI portfolio — commands, menus, typewriter effects",
+        "icon": "🖥️",
+        "href": "cli.html",
+        "color": "#00ff66",
+        "boot_lines": [
+          "[INIT] Loading terminal subsystem...",
+          "[OK]   Shell environment ready",
+          "[OK]   Command parser initialized"
+        ]
+      },
+      {
+        "id": "vnc",
+        "label": "Remote Desktop (VNC)",
+        "description": "Ubuntu-style desktop with draggable windows, file manager, apps",
+        "icon": "🖥️",
+        "href": "vnc.html",
+        "color": "#e95420",
+        "boot_lines": [
+          "[INIT] Establishing VNC tunnel...",
+          "[OK]   Framebuffer negotiated",
+          "[OK]   Desktop session active"
+        ]
+      }
+    ],
+    "footer": "guest@tarantino-systems:~$ Choose your entry vector"
+  },
+  "navigation": {
+    "cli": {
+      "back_to_orchestrator": {
+        "command": "exit",
+        "label": "Return to Welcome Screen",
+        "action": "window.location.href = 'index.html'"
+      }
+    },
+    "vnc": {
+      "disconnect": {
+        "label": "Disconnect VNC",
+        "action": "window.location.href = 'index.html'"
+      }
+    }
+  }
+}
