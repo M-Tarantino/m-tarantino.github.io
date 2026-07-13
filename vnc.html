@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muneeb Ur Tarantino | VNC Remote Desktop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+            background: #0a0e14;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           CONNECTING OVERLAY
+           ═══════════════════════════════════════════════════════════════ */
+        .vnc-connecting {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #0c0c0c;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #00ff66;
+            font-family: 'Courier New', monospace;
+        }
+
+        .vnc-connect-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .vnc-connect-bar {
+            width: 300px;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .vnc-connect-fill {
+            height: 100%;
+            background: #00ff66;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,255,102,0.5);
+        }
+
+        .vnc-connect-status {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+
+        .vnc-connecting.hidden { display: none !important; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           DESKTOP
+           ═══════════════════════════════════════════════════════════════ */
+        #vnc-desktop {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .vnc-desktop-bg {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(135deg, #2c001e 0%, #1a0a2e 50%, #0d1b2a 100%);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Desktop Icons */
+        .desktop-icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 90px);
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 4px;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            user-select: none;
+            width: 90px;
+        }
+
+        .desktop-icon:hover { background-color: rgba(255,255,255,0.1); }
+        .desktop-icon:active { transform: scale(0.95); }
+        .desktop-icon.selected {
+            background-color: rgba(233, 84, 32, 0.3);
+            outline: 1px solid rgba(233, 84, 32, 0.6);
+        }
+
+        .desktop-icon-emoji {
+            font-size: 2.2rem;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+        }
+
+        .desktop-icon-label {
+            color: #ffffff;
+            font-size: 0.75rem;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           WINDOWS
+           ═══════════════════════════════════════════════════════════════ */
+        .vnc-window {
+            position: absolute;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            min-height: 200px;
+            animation: windowOpen 0.2s ease-out;
+        }
+
+        @keyframes windowOpen {
+            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .vnc-window.focused {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.15);
+            z-index: 100;
+        }
+
+        .vnc-window-titlebar {
+            background: linear-gradient(180deg, #3c3c3c 0%, #2d2d2d 100%);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: grab;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .vnc-window-titlebar:active { cursor: grabbing; }
+
+        .vnc-window-dots { display: flex; gap: 6px; }
+
+        .vnc-window-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .vnc-window-dot:hover { transform: scale(1.2); }
+        .vnc-dot-close { background-color: #ff5f56; }
+        .vnc-dot-min { background-color: #ffbd2e; }
+        .vnc-dot-max { background-color: #27c93f; }
+
+        .vnc-window-title {
+            flex: 1;
+            color: #cccccc;
+            font-size: 0.8rem;
+            text-align: center;
+            padding-right: 40px;
+        }
+
+        .vnc-window-content {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+            color: #d4d4d4;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .vnc-window-content::-webkit-scrollbar { width: 6px; }
+        .vnc-window-content::-webkit-scrollbar-track { background: transparent; }
+        .vnc-window-content::-webkit-scrollbar-thumb { background: #484f58; border-radius: 3px; }
+
+        /* Window Content Types */
+        .vnc-text-content { white-space: pre-line; }
+
+        .vnc-file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+        }
+
+        .vnc-file-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .vnc-file-item:hover { background-color: rgba(255,255,255,0.08); }
+
+        .vnc-file-icon { font-size: 2rem; margin-bottom: 6px; }
+        .vnc-file-name { color: #cccccc; font-size: 0.75rem; text-align: center; word-break: break-word; }
+
+        .vnc-terminal-content {
+            background-color: #0c0c0c;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #00ff66;
+            white-space: pre-line;
+            min-height: 200px;
+        }
+
+        .vnc-log-content {
+            background-color: #0c0c0c;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #8b949e;
+            white-space: pre-line;
+            min-height: 200px;
+        }
+
+        .vnc-log-entry { margin-bottom: 8px; padding-left: 12px; border-left: 2px solid #30363d; }
+        .vnc-log-timestamp { color: #58a6ff; font-size: 0.75rem; }
+
+        .vnc-network-content { display: flex; flex-direction: column; gap: 12px; }
+
+        .vnc-network-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+
+        .vnc-network-row:hover { background-color: rgba(255,255,255,0.1); }
+        .vnc-network-icon { font-size: 1.5rem; }
+        .vnc-network-info { flex: 1; }
+        .vnc-network-label { color: #8b949e; font-size: 0.75rem; }
+        .vnc-network-value { color: #ffffff; font-size: 0.9rem; }
+        .vnc-network-value a { color: #00ff66; text-decoration: none; }
+        .vnc-network-value a:hover { text-decoration: underline; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           TASKBAR
+           ═══════════════════════════════════════════════════════════════ */
+        .vnc-taskbar {
+            background: linear-gradient(180deg, #2d2d2d 0%, #1e1e1e 100%);
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-top: 1px solid #3c3c3c;
+            height: 44px;
+            z-index: 200;
+        }
+
+        .vnc-start-btn {
+            background: linear-gradient(180deg, #e95420 0%, #c43e10 100%);
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .vnc-start-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+        .vnc-taskbar-apps { display: flex; gap: 4px; flex: 1; margin-left: 8px; }
+
+        .vnc-taskbar-app {
+            background-color: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .vnc-taskbar-app:hover { background-color: rgba(255,255,255,0.12); }
+        .vnc-taskbar-app.active { background-color: rgba(233, 84, 32, 0.3); border-color: rgba(233, 84, 32, 0.5); }
+
+        .vnc-clock { color: #cccccc; font-size: 0.8rem; padding: 0 8px; }
+
+        .vnc-nav-btn {
+            background: transparent;
+            border: 1px solid #484f58;
+            color: #8b949e;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: 4px;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .vnc-nav-btn:hover { border-color: #ff5f56; color: #ff5f56; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           START MENU
+           ═══════════════════════════════════════════════════════════════ */
+        .vnc-start-menu {
+            position: absolute;
+            bottom: 50px;
+            left: 8px;
+            background: linear-gradient(180deg, #2d2d2d 0%, #1e1e1e 100%);
+            border: 1px solid #3c3c3c;
+            border-radius: 8px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            display: none;
+            z-index: 300;
+        }
+
+        .vnc-start-menu.active { display: block; }
+
+        .vnc-start-item {
+            padding: 8px 12px;
+            color: #cccccc;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .vnc-start-item:hover { background-color: rgba(233, 84, 32, 0.3); color: #ffffff; }
+
+        .vnc-start-divider {
+            height: 1px;
+            background-color: #3c3c3c;
+            margin: 6px 0;
+        }
+
+        .vnc-start-header {
+            color: #8b949e;
+            font-size: 0.7rem;
+            padding: 4px 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            .desktop-icons { grid-template-columns: repeat(auto-fill, 80px); gap: 12px; }
+            .desktop-icon { width: 80px; }
+            .desktop-icon-emoji { font-size: 1.8rem; }
+            .vnc-window { max-width: 95vw !important; max-height: 80vh !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Connecting Overlay -->
+<div class="vnc-connecting" id="vnc-connecting">
+    <div class="vnc-connect-text">Connecting to tarantino-desktop.local:5900...</div>
+    <div class="vnc-connect-bar"><div class="vnc-connect-fill" id="vnc-connect-fill"></div></div>
+    <div class="vnc-connect-status" id="vnc-connect-status">Handshaking...</div>
+</div>
+
+<!-- Desktop -->
+<div id="vnc-desktop">
+    <div class="vnc-desktop-bg" id="vnc-desktop-bg">
+        <div class="desktop-icons" id="desktop-icons"></div>
+    </div>
+
+    <!-- Start Menu -->
+    <div class="vnc-start-menu" id="vnc-start-menu">
+        <div class="vnc-start-header">Applications</div>
+        <div id="start-menu-apps"></div>
+        <div class="vnc-start-divider"></div>
+        <div class="vnc-start-header">System</div>
+        <div class="vnc-start-item" onclick="vncDisconnect()">
+            <span>🔌</span> Disconnect VNC
+        </div>
+        <div class="vnc-start-divider"></div>
+        <div class="vnc-start-item" onclick="window.location.href='cli.html'">
+            <span>🖥️</span> Open Terminal
+        </div>
+        <div class="vnc-start-item" onclick="window.location.href='index.html'">
+            <span>🏠</span> Welcome Screen
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="vnc-taskbar">
+        <button class="vnc-start-btn" id="vnc-start-btn" onclick="toggleStartMenu()">
+            <span>◉</span> Start
+        </button>
+        <div class="vnc-taskbar-apps" id="vnc-taskbar-apps"></div>
+        <a href="index.html" class="vnc-nav-btn">← Welcome</a>
+        <a href="cli.html" class="vnc-nav-btn">CLI →</a>
+        <div class="vnc-clock" id="vnc-clock">--:--</div>
+    </div>
+</div>
+
+<script>
+let DATA = null;
+let vncWindows = {};
+let vncWindowZ = 10;
+let vncActiveWindow = null;
+let vncDragging = null;
+let vncDragOffset = { x: 0, y: 0 };
+
+const vncConnecting = document.getElementById('vnc-connecting');
+const vncConnectFill = document.getElementById('vnc-connect-fill');
+const vncConnectStatus = document.getElementById('vnc-connect-status');
+const desktopIcons = document.getElementById('desktop-icons');
+const vncStartMenu = document.getElementById('vnc-start-menu');
+const vncTaskbarApps = document.getElementById('vnc-taskbar-apps');
+const vncClock = document.getElementById('vnc-clock');
+const startMenuApps = document.getElementById('start-menu-apps');
+
+fetch('data.json')
+    .then(r => r.json())
+    .then(d => {
+        DATA = d;
+        buildDesktop();
+        buildStartMenu();
+        startVNCConnection();
+        startClock();
+    })
+    .catch(() => {
+        vncConnectStatus.textContent = 'ERROR: data.json not found';
+        vncConnectStatus.style.color = '#ff5f56';
+    });
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONNECTION SEQUENCE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function startVNCConnection() {
+    const steps = [
+        { pct: '15%', txt: 'Resolving tarantino-desktop.local...', delay: 400 },
+        { pct: '35%', txt: 'Handshaking VNC protocol (RFB 003.008)...', delay: 600 },
+        { pct: '55%', txt: 'Authenticating session token...', delay: 500 },
+        { pct: '75%', txt: 'Negotiating framebuffer encoding (Tight)...', delay: 600 },
+        { pct: '92%', txt: 'Synchronizing remote desktop (1920x1080)...', delay: 500 },
+        { pct: '100%', txt: 'Connected. Rendering remote session.', delay: 400 }
+    ];
+
+    let stepIdx = 0;
+    function nextStep() {
+        if (stepIdx >= steps.length) {
+            setTimeout(() => { vncConnecting.classList.add('hidden'); }, 300);
+            return;
+        }
+        const s = steps[stepIdx];
+        vncConnectFill.style.width = s.pct;
+        vncConnectStatus.textContent = s.txt;
+        stepIdx++;
+        setTimeout(nextStep, s.delay);
+    }
+    nextStep();
+}
+
+function vncDisconnect() {
+    Object.values(vncWindows).forEach(w => {
+        if (w.element && w.element.parentNode) w.element.parentNode.removeChild(w.element);
+    });
+    vncWindows = {};
+    vncWindowZ = 10;
+    vncActiveWindow = null;
+    vncTaskbarApps.innerHTML = '';
+    window.location.href = 'index.html';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DESKTOP BUILDER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function buildDesktop() {
+    if (!DATA || !DATA.vnc) return;
+    DATA.vnc.icons.forEach(icon => {
+        const div = document.createElement('div');
+        div.className = 'desktop-icon';
+        div.dataset.id = icon.id;
+        div.innerHTML = `
+            <div class="desktop-icon-emoji">${icon.icon}</div>
+            <div class="desktop-icon-label">${icon.label}</div>
+        `;
+        div.addEventListener('click', () => selectIcon(icon.id));
+        div.addEventListener('dblclick', () => vncOpenWindow(icon.id));
+        desktopIcons.appendChild(div);
+    });
+
+    document.getElementById('vnc-desktop-bg').addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (e.target.closest('.desktop-icon') || e.target.closest('.vnc-window')) return;
+        hideStartMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#vnc-start-btn') && !e.target.closest('#vnc-start-menu')) {
+            hideStartMenu();
+        }
+    });
+}
+
+function buildStartMenu() {
+    if (!DATA || !DATA.vnc) return;
+    DATA.vnc.icons.forEach(icon => {
+        const item = document.createElement('div');
+        item.className = 'vnc-start-item';
+        item.innerHTML = `<span>${icon.icon}</span> ${icon.label}`;
+        item.onclick = () => { vncOpenWindow(icon.id); hideStartMenu(); };
+        startMenuApps.appendChild(item);
+    });
+}
+
+function selectIcon(id) {
+    document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+    const icon = document.querySelector(`.desktop-icon[data-id="${id}"]`);
+    if (icon) icon.classList.add('selected');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WINDOW MANAGER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function vncOpenWindow(iconId) {
+    if (!DATA || !DATA.vnc) return;
+    const iconData = DATA.vnc.icons.find(i => i.id === iconId);
+    if (!iconData) return;
+
+    if (vncWindows[iconId]) { focusWindow(iconId); return; }
+
+    const winId = 'win-' + iconId + '-' + Date.now();
+    const win = document.createElement('div');
+    win.className = 'vnc-window';
+    win.id = winId;
+    win.style.width = iconData.width + 'px';
+    win.style.height = iconData.height + 'px';
+
+    const offsetX = (Object.keys(vncWindows).length * 30) % 200;
+    const offsetY = (Object.keys(vncWindows).length * 25) % 150;
+    win.style.left = (80 + offsetX) + 'px';
+    win.style.top = (40 + offsetY) + 'px';
+    win.style.zIndex = ++vncWindowZ;
+
+    const content = buildWindowContent(iconData);
+
+    win.innerHTML = `
+        <div class="vnc-window-titlebar" data-winid="${winId}">
+            <div class="vnc-window-dots">
+                <div class="vnc-window-dot vnc-dot-close" onclick="closeWindow('${winId}')"></div>
+                <div class="vnc-window-dot vnc-dot-min" onclick="minimizeWindow('${winId}')"></div>
+                <div class="vnc-window-dot vnc-dot-max" onclick="maximizeWindow('${winId}')"></div>
+            </div>
+            <div class="vnc-window-title">${iconData.window_title}</div>
+        </div>
+        <div class="vnc-window-content">${content}</div>
+    `;
+
+    const titlebar = win.querySelector('.vnc-window-titlebar');
+    titlebar.addEventListener('mousedown', (e) => startDrag(e, winId));
+    win.addEventListener('mousedown', () => focusWindowById(winId));
+
+    document.getElementById('vnc-desktop-bg').appendChild(win);
+
+    vncWindows[iconId] = { id: winId, element: win, iconId: iconId, minimized: false };
+    focusWindowById(winId);
+    updateTaskbar();
+}
+
+function buildWindowContent(iconData) {
+    switch (iconData.content_type) {
+        case 'text':
+            if (iconData.id === 'about') {
+                const p = DATA.profile;
+                return `<div class="vnc-text-content">
+<span style="color:#e95420;font-weight:bold;">═══════════════════════════════════════</span>
+<span style="color:#ffffff;font-weight:bold;font-size:1.1rem;">  ${p.name}</span>
+<span style="color:#8b949e;">  ${p.role}</span>
+<span style="color:#e95420;font-weight:bold;">═══════════════════════════════════════</span>
+
+<span style="color:#58a6ff;">Location:</span>  ${p.location}
+<span style="color:#58a6ff;">Languages:</span> ${p.languages.map(l => l.lang + ' (' + l.level + ')').join(', ')}
+
+<span style="color:#ffbd2e;">Philosophy:</span>
+${p.philosophy}
+
+<span style="color:#00ff66;">Technical Stack:</span>
+Languages:  ${p.stack.languages.join(', ')}
+Systems:    ${p.stack.systems.join(', ')}
+Tools:      ${p.stack.build_tools.join(', ')}
+                </div>`;
+            }
+            if (iconData.id === 'certs') {
+                return `<div class="vnc-text-content">
+<span style="color:#58a6ff;font-weight:bold;">📜 CERTIFIED TRAINING RECORDS</span>
+<span style="color:#e95420;">═══════════════════════════════════════</span>
+
+${DATA.certifications.map(c => `✔ <span style="color:#00ff66;">${c.name}</span>  [${c.date}]`).join('\n')}
+                </div>`;
+            }
+            return `<div class="vnc-text-content">Content for ${iconData.id}</div>`;
+
+        case 'file_manager':
+            return `<div class="vnc-file-grid">
+${DATA.projects_index.map(proj => {
+    const emoji = proj.key === 'helix' ? '⚙️' : proj.key === 'yeti' ? '🔍' : proj.key === 'sasquatch' ? '🔧' : proj.key === 'pfat' ? '🔐' : '📡';
+    return `<div class="vnc-file-item" onclick="vncOpenProjectWindow('${proj.key}')">
+    <div class="vnc-file-icon">${emoji}</div>
+    <div class="vnc-file-name">${proj.name}.md</div>
+</div>`;
+}).join('')}
+            </div>`;
+
+        case 'terminal_app':
+            const proj = DATA.projects[iconData.id];
+            if (!proj) return '<div class="vnc-terminal-content">Project not found.</div>';
+            return `<div class="vnc-terminal-content">
+<span style="color:#ffbd2e;font-weight:bold;">▓▓▓ ${proj.title} ▓▓▓</span>
+
+<span style="color:#58a6ff;">Stack:</span> ${proj.stack.join(' | ')}${proj.lines ? ' | ' + proj.lines + ' lines' : ''}
+<span style="color:#ff79c6;">Status:</span> ${proj.status}${proj.license ? ' | ' + proj.license : ''}
+
+<span style="color:#e95420;">─── OVERVIEW ───</span>
+${proj.overview}
+
+<span style="color:#e95420;">─── KEY MECHANISMS ───</span>
+${proj.mechanisms.map(m => `► <span style="color:#00ff66;">${m.name}</span>\n  ${m.desc}`).join('\n\n')}
+            </div>`;
+
+        case 'log':
+            return `<div class="vnc-log-content">
+<span style="color:#58a6ff;font-weight:bold;">📋 SYSTEM EXPERIENCE LOG</span>
+<span style="color:#30363d;">═══════════════════════════════════════</span>
+
+${DATA.experience.map(exp => {
+    const ts = new Date().getFullYear() + '-' + String(Math.floor(Math.random()*12+1)).padStart(2,'0') + '-' + String(Math.floor(Math.random()*28+1)).padStart(2,'0');
+    return `<div class="vnc-log-entry">
+<span class="vnc-log-timestamp">[${ts}]</span> <span style="color:#ffbd2e;font-weight:bold;">${exp.title}</span>
+${exp.company ? '<span style="color:#8b949e;">@ ' + exp.company + '</span>' : ''}
+<span style="color:#58a6ff;">Period:</span> ${exp.period}
+${exp.desc}
+</div>`;
+}).join('\n')}
+            </div>`;
+
+        case 'network':
+            const c = DATA.contact;
+            return `<div class="vnc-network-content">
+<div class="vnc-network-row">
+    <div class="vnc-network-icon">📧</div>
+    <div class="vnc-network-info">
+        <div class="vnc-network-label">Email</div>
+        <div class="vnc-network-value"><a href="mailto:${c.email}">${c.email}</a></div>
+    </div>
+</div>
+<div class="vnc-network-row">
+    <div class="vnc-network-icon">🐙</div>
+    <div class="vnc-network-info">
+        <div class="vnc-network-label">GitHub</div>
+        <div class="vnc-network-value"><a href="${c.github}" target="_blank">${c.github.replace('https://','')}</a></div>
+    </div>
+</div>
+<div class="vnc-network-row">
+    <div class="vnc-network-icon">📍</div>
+    <div class="vnc-network-info">
+        <div class="vnc-network-label">Status</div>
+        <div class="vnc-network-value" style="color:#00ff66;">${c.status}</div>
+    </div>
+</div>
+            </div>`;
+
+        case 'embedded_terminal':
+            return `<div class="vnc-terminal-content" style="height:100%;display:flex;flex-direction:column;">
+<div style="margin-bottom:8px;color:#8b949e;">guest@tarantino-desktop:~$ <span style="color:#ffffff;">neofetch</span></div>
+<div style="display:flex;gap:16px;">
+<div style="color:#e95420;font-size:2rem;line-height:1;">◉</div>
+<div>
+<span style="color:#ffbd2e;">OS:</span> TarantinoOS 1.2.0 x86_64
+<span style="color:#ffbd2e;">Host:</span> tarantino-desktop
+<span style="color:#ffbd2e;">Kernel:</span> 6.8.0-helix-custom
+<span style="color:#ffbd2e;">Uptime:</span> 420 days, 6 hrs, 9 mins
+<span style="color:#ffbd2e;">Shell:</span> bash 5.2.15
+<span style="color:#ffbd2e;">Resolution:</span> 1920x1080
+<span style="color:#ffbd2e;">DE:</span> GNOME 45.2
+<span style="color:#ffbd2e;">WM:</span> Mutter
+<span style="color:#ffbd2e;">Theme:</span> Yaru-dark [GTK2/3]
+<span style="color:#ffbd2e;">Icons:</span> Yaru [GTK2/3]
+<span style="color:#ffbd2e;">Terminal:</span> gnome-terminal
+<span style="color:#ffbd2e;">CPU:</span> AMD Ryzen 9 7950X (32) @ 5.7GHz
+<span style="color:#ffbd2e;">GPU:</span> NVIDIA RTX 4090
+<span style="color:#ffbd2e;">Memory:</span> 64321MiB / 128736MiB
+</div>
+</div>
+<div style="margin-top:12px;color:#8b949e;">guest@tarantino-desktop:~$ <span style="animation:blink 1s step-end infinite;">_</span></div>
+            </div>`;
+
+        default:
+            return `<div class="vnc-text-content">Unknown content type: ${iconData.content_type}</div>`;
+    }
+}
+
+function vncOpenProjectWindow(key) {
+    vncOpenWindow(key);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WINDOW CONTROLS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function closeWindow(winId) {
+    const win = document.getElementById(winId);
+    if (win) {
+        win.style.animation = 'windowOpen 0.15s ease-in reverse';
+        setTimeout(() => {
+            if (win.parentNode) win.parentNode.removeChild(win);
+            for (const [key, val] of Object.entries(vncWindows)) {
+                if (val.id === winId) { delete vncWindows[key]; break; }
+            }
+            updateTaskbar();
+        }, 150);
+    }
+}
+
+function minimizeWindow(winId) {
+    const win = document.getElementById(winId);
+    if (win) {
+        win.style.display = 'none';
+        for (const [key, val] of Object.entries(vncWindows)) {
+            if (val.id === winId) { val.minimized = true; break; }
+        }
+        updateTaskbar();
+    }
+}
+
+function maximizeWindow(winId) {
+    const win = document.getElementById(winId);
+    if (!win) return;
+    if (win.dataset.maximized === 'true') {
+        win.style.width = win.dataset.prevWidth;
+        win.style.height = win.dataset.prevHeight;
+        win.style.left = win.dataset.prevLeft;
+        win.style.top = win.dataset.prevTop;
+        win.dataset.maximized = 'false';
+    } else {
+        win.dataset.prevWidth = win.style.width;
+        win.dataset.prevHeight = win.style.height;
+        win.dataset.prevLeft = win.style.left;
+        win.dataset.prevTop = win.style.top;
+        win.style.width = 'calc(100vw - 40px)';
+        win.style.height = 'calc(100vh - 80px)';
+        win.style.left = '20px';
+        win.style.top = '20px';
+        win.dataset.maximized = 'true';
+    }
+}
+
+function focusWindow(iconId) {
+    const winData = vncWindows[iconId];
+    if (winData && winData.element) {
+        winData.element.style.display = 'flex';
+        winData.minimized = false;
+        focusWindowById(winData.id);
+        updateTaskbar();
+    }
+}
+
+function focusWindowById(winId) {
+    const win = document.getElementById(winId);
+    if (win) {
+        win.style.zIndex = ++vncWindowZ;
+        document.querySelectorAll('.vnc-window').forEach(w => w.classList.remove('focused'));
+        win.classList.add('focused');
+        vncActiveWindow = winId;
+        updateTaskbar();
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DRAGGING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function startDrag(e, winId) {
+    if (e.target.classList.contains('vnc-window-dot')) return;
+    const win = document.getElementById(winId);
+    if (!win || win.dataset.maximized === 'true') return;
+
+    vncDragging = win;
+    vncDragOffset.x = e.clientX - win.offsetLeft;
+    vncDragOffset.y = e.clientY - win.offsetTop;
+    focusWindowById(winId);
+
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+}
+
+function onDragMove(e) {
+    if (!vncDragging) return;
+    vncDragging.style.left = (e.clientX - vncDragOffset.x) + 'px';
+    vncDragging.style.top = (e.clientY - vncDragOffset.y) + 'px';
+}
+
+function onDragEnd() {
+    vncDragging = null;
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TASKBAR & START MENU
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function updateTaskbar() {
+    vncTaskbarApps.innerHTML = '';
+    Object.values(vncWindows).forEach(winData => {
+        const iconData = DATA.vnc.icons.find(i => i.id === winData.iconId);
+        if (!iconData) return;
+
+        const btn = document.createElement('div');
+        btn.className = 'vnc-taskbar-app' + (winData.minimized ? '' : ' active');
+        btn.innerHTML = `<span>${iconData.icon}</span> <span>${iconData.label}</span>`;
+        btn.onclick = () => {
+            if (winData.minimized) { focusWindow(winData.iconId); }
+            else if (vncActiveWindow === winData.id) { minimizeWindow(winData.id); }
+            else { focusWindowById(winData.id); }
+        };
+        vncTaskbarApps.appendChild(btn);
+    });
+}
+
+function toggleStartMenu() {
+    vncStartMenu.classList.toggle('active');
+}
+
+function hideStartMenu() {
+    vncStartMenu.classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function startClock() {
+    function tick() {
+        const now = new Date();
+        vncClock.textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+    tick();
+    setInterval(tick, 1000);
+}
+</script>
+
+</body>
+</html>
