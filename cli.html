@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muneeb Ur Tarantino | Terminal Shell</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0c0f12;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        .terminal-bar {
+            background-color: #21262d;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #30363d;
+            align-items: center;
+        }
+
+        .dot { width: 13px; height: 13px; border-radius: 50%; }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .terminal-title {
+            margin-left: 12px;
+            color: #8b949e;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .terminal-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn:hover {
+            border-color: #ff5f56;
+            color: #ff5f56;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            min-height: 520px;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 85vh;
+        }
+
+        .prompt { color: #58a6ff; font-weight: bold; }
+        .command { color: #ffffff; }
+        .accent { color: #ffbd2e; font-weight: bold; }
+        .sub-accent { color: #ff79c6; font-weight: bold; }
+        .data-label { color: #79c0ff; font-weight: bold; }
+        .data-value { color: #ffffff; }
+        .data-highlight { 
+            color: #00ff66; 
+            font-weight: bold;
+            background-color: rgba(0, 255, 102, 0.08);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .data-tech { 
+            color: #ffbd2e; 
+            font-weight: bold;
+            background-color: rgba(255, 189, 46, 0.08);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .data-status { color: #ff79c6; font-weight: bold; }
+        .data-link { 
+            color: #00ff66; 
+            text-decoration: none;
+            border-bottom: 1px dotted #00ff66;
+        }
+        .data-link:hover { color: #ffffff; border-bottom-color: #ffffff; }
+        .data-section {
+            color: #58a6ff;
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 18px;
+            padding: 8px 12px;
+            background-color: rgba(33, 38, 45, 0.5);
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+
+        .cli-input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            flex: 1;
+            outline: none;
+            padding-left: 10px;
+            caret-color: #00ff66;
+        }
+
+        .menu-options {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-top: 1px dashed #30363d;
+            padding-top: 18px;
+        }
+
+        .cli-btn {
+            background-color: #21262d;
+            color: #00ff66;
+            border: 1px solid #30363d;
+            padding: 9px 16px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .cli-btn:hover {
+            background-color: #00ff66;
+            color: #0c0f12;
+            box-shadow: 0 0 12px rgba(0,255,102,0.4);
+            transform: translateY(-1px);
+        }
+
+        .cli-btn:active { transform: scale(0.96); }
+        .cli-btn.active { background-color: #00ff66; color: #0c0f12; box-shadow: 0 0 15px rgba(0,255,102,0.6); }
+        .cli-btn.back-btn { color: #ff5f56; border-color: #ff5f56; }
+        .cli-btn.back-btn:hover { background-color: #ff5f56; color: #0c0f12; }
+
+        .output-block {
+            margin-top: 15px;
+            color: #c9d1d9;
+            white-space: pre-line;
+        }
+
+        .output-block strong { color: #79c0ff; }
+        .output-block em { color: #8b949e; }
+
+        .hidden { display: none !important; }
+
+        .boot-line {
+            margin-bottom: 5px;
+            opacity: 0;
+            animation: fadeIn 0.1s forwards;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+
+        .terminal-body::-webkit-scrollbar { width: 8px; }
+        .terminal-body::-webkit-scrollbar-track { background: #161b22; }
+        .terminal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .terminal-body { padding: 14px; min-height: 400px; }
+            .cli-btn { font-size: 0.8rem; padding: 7px 10px; }
+            .menu-options { gap: 6px; }
+            .nav-btn { padding: 3px 8px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal-container">
+    <div class="terminal-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <span class="terminal-title">guest@tarantino-systems: ~</span>
+        <div class="terminal-nav">
+            <a href="index.html" class="nav-btn">← Welcome</a>
+            <a href="vnc.html" class="nav-btn">VNC →</a>
+        </div>
+    </div>
+    <div class="terminal-body" id="terminal-body">
+        <div id="boot-screen"></div>
+        <div id="main-terminal" class="hidden">
+            <div><span class="prompt">guest@tarantino-systems:~$</span> <span class="command">initialize --portfolio-v3</span></div>
+            <div style="color: #8b949e; margin-top: 6px;">Muneeb Ur Tarantino Shell v1.2.0 active. Type <span class="accent">'help'</span> for manual execution.</div>
+            <div id="terminal-output" class="output-block">Select an option from the menu network below or type directly into the terminal shell.</div>
+            <div class="input-line">
+                <span class="prompt">guest@tarantino-systems:~$</span>
+                <input type="text" id="terminal-input-field" class="cli-input" autofocus autocomplete="off" spellcheck="false" placeholder="Type a command...">
+            </div>
+            <div id="main-menu" class="menu-options"></div>
+            <div id="project-menu" class="menu-options hidden"></div>
+            <div id="generic-back" class="menu-options hidden">
+                <button class="cli-btn back-btn" data-action="clear">[Back to Main Menu]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let DATA = null;
+let commandHistory = [];
+let historyIndex = -1;
+
+const bootScreen = document.getElementById('boot-screen');
+const mainTerminal = document.getElementById('main-terminal');
+const inputField = document.getElementById('terminal-input-field');
+const terminalBody = document.getElementById('terminal-body');
+const output = document.getElementById('terminal-output');
+const mainMenu = document.getElementById('main-menu');
+const projectMenu = document.getElementById('project-menu');
+const genericBack = document.getElementById('generic-back');
+
+fetch('data.json')
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(d => { DATA = d; buildMenus(); printBootLine(); })
+    .catch(() => { output.innerHTML = '<span style="color:#ff5f56;">ERROR: data.json not found.</span>'; });
+
+let lineIndex = 0;
+function printBootLine() {
+    if (!DATA) return;
+    if (lineIndex < DATA.boot_lines.length) {
+        const div = document.createElement('div');
+        div.className = 'boot-line';
+        div.innerText = DATA.boot_lines[lineIndex];
+        bootScreen.appendChild(div);
+        lineIndex++;
+        setTimeout(printBootLine, 180);
+    } else {
+        setTimeout(() => {
+            bootScreen.classList.add('hidden');
+            mainTerminal.classList.remove('hidden');
+            mainTerminal.classList.add('fade-in');
+            inputField.focus();
+        }, 500);
+    }
+}
+
+function buildMenus() {
+    DATA.ui.menu_buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.className = 'cli-btn';
+        button.textContent = btn.label;
+        button.dataset.action = btn.action;
+        button.addEventListener('click', () => animateAndExecute(btn.action));
+        mainMenu.appendChild(button);
+    });
+    DATA.ui.project_buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.className = 'cli-btn';
+        button.textContent = btn.label;
+        button.dataset.action = btn.action;
+        button.addEventListener('click', () => animateAndExecute(btn.action));
+        projectMenu.appendChild(button);
+    });
+    const backBtn = document.createElement('button');
+    backBtn.className = 'cli-btn back-btn';
+    backBtn.textContent = '[Back to Main Menu]';
+    backBtn.addEventListener('click', () => animateAndExecute('clear'));
+    projectMenu.appendChild(backBtn);
+}
+
+document.querySelector('.terminal-body').addEventListener('click', (e) => {
+    if (!e.target.classList.contains('cli-btn')) inputField.focus();
+});
+
+inputField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const cmd = inputField.value.trim();
+        if (cmd) { commandHistory.push(cmd); historyIndex = -1; }
+        processCommand(cmd);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            inputField.value = commandHistory[commandHistory.length - 1 - historyIndex];
+        }
+    } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            inputField.value = commandHistory[commandHistory.length - 1 - historyIndex];
+        } else { historyIndex = -1; inputField.value = ''; }
+    }
+});
+
+function animateAndExecute(action) {
+    if (!DATA) return;
+    const targetCommand = DATA.ui.command_map[action] || action;
+    inputField.value = '';
+    let i = 0;
+    function typeChar() {
+        if (i < targetCommand.length) {
+            inputField.value += targetCommand.charAt(i);
+            i++;
+            setTimeout(typeChar, 35);
+        } else { setTimeout(() => processCommand(targetCommand), 150); }
+    }
+    typeChar();
+}
+
+function scrollToBottom() {
+    setTimeout(() => { terminalBody.scrollTop = terminalBody.scrollHeight; }, 50);
+}
+
+function resetUI() {
+    inputField.value = '';
+    mainMenu.classList.add('hidden');
+    projectMenu.classList.add('hidden');
+    genericBack.classList.add('hidden');
+    document.querySelectorAll('.cli-btn').forEach(btn => btn.classList.remove('active'));
+}
+
+function processCommand(rawCmd) {
+    if (!DATA) return;
+    const cmd = rawCmd.toLowerCase().trim();
+    resetUI();
+
+    if (cmd === 'vnc' || cmd === 'startx' || cmd === 'desktop') {
+        window.location.href = 'vnc.html';
+        return;
+    }
+
+    if (cmd === 'cat about_me.txt' || cmd === 'about' || cmd === '1') {
+        const p = DATA.profile;
+        const langs = p.languages.map(l => `<span class="data-highlight">${l.lang} (${l.level})</span>`).join(', ');
+        const stackLangs = p.stack.languages.map(l => `<span class="data-tech">${l}</span>`).join('  ');
+        const stackSystems = p.stack.systems.map(s => `<span class="data-tech">${s}</span>`).join('  ');
+        const stackTools = p.stack.build_tools.map(t => `<span class="data-tech">${t}</span>`).join('  ');
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat about_me.txt</span>
+
+<span class="data-section">┌─ PERSONAL DATA ─────────────────────────────────────┐</span>
+
+  <span class="data-label">Name:</span>       <span class="data-highlight">${p.name}</span>
+  <span class="data-label">Role:</span>       <span class="data-highlight">${p.role}</span>
+  <span class="data-label">Location:</span>   <span class="data-highlight">${p.location}</span>
+  <span class="data-label">Languages:</span>  ${langs}
+
+<span class="data-section">┌─ ENGINEERING PHILOSOPHY ────────────────────────────┐</span>
+
+  "${p.philosophy}"
+
+<span class="data-section">┌─ CORE TECHNICAL STACK ────────────────────────────────┐</span>
+
+  <span class="data-label">Languages:</span>   ${stackLangs}
+  <span class="data-label">Systems:</span>     ${stackSystems}
+  <span class="data-label">Build Tools:</span> ${stackTools}
+        `;
+        genericBack.classList.remove('hidden');
+    }
+
+    else if (cmd === 'ls -la /projects' || cmd === 'projects' || cmd === '2') {
+        let projectLines = DATA.projects_index.map(proj => {
+            const vis = proj.visibility === 'Private' ? '<span class="data-status">[Private]</span>' : '<span class="data-label">[Public]</span>';
+            return `  ${vis}  <span class="data-highlight">${proj.name}</span>  — ${proj.desc} (${proj.lang})`;
+        }).join('\n');
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">ls -la /projects</span>
+
+<span class="data-section">┌─ REPOSITORY INDEX ────────────────────────────────────┐</span>
+
+total ${DATA.projects_index.length}
+drwxr-xr-x  ${DATA.projects_index.length} muneeb  staff   ${DATA.projects_index.length * 32} Jul 2026 .
+
+${projectLines}
+
+<em>System: Submenu unlocked. Select a project file below or type its path.</em>
+        `;
+        projectMenu.classList.remove('hidden');
+    }
+
+    else if (cmd.includes('helix_poc.md') || cmd === 'helix') { renderProject('helix'); projectMenu.classList.remove('hidden'); }
+    else if (cmd.includes('yeti_forensics.md') || cmd === 'yeti') { renderProject('yeti'); projectMenu.classList.remove('hidden'); }
+    else if (cmd.includes('sasquatch_builder.md') || cmd === 'sasquatch') { renderProject('sasquatch'); projectMenu.classList.remove('hidden'); }
+    else if (cmd.includes('pfat_audit.md') || cmd === 'pfat') { renderProject('pfat'); projectMenu.classList.remove('hidden'); }
+    else if (cmd.includes('wardrive_audit.md') || cmd === 'wardrive') { renderProject('wardrive'); projectMenu.classList.remove('hidden'); }
+
+    else if (cmd === 'realpath /certifications' || cmd === 'certs' || cmd === '3') {
+        const certLines = DATA.certifications.map(c => `  ✔ <span class="data-highlight">${c.name}</span>          [${c.date}]`).join('\n');
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">realpath /certifications</span>
+
+<span class="data-section">┌─ VERIFIED TECHNICAL TRAINING COMPLETIONS ─────────────┐</span>
+
+${certLines}
+        `;
+        genericBack.classList.remove('hidden');
+    }
+
+    else if (cmd === 'history | grep experience' || cmd === 'experience' || cmd === '4') {
+        const expLines = DATA.experience.map((exp, i) => {
+            const companyLine = exp.company ? `  <span class="data-value">${exp.company} | [${exp.period}]</span>` : `  <span class="data-value">[${exp.period}]</span>`;
+            const divider = i < DATA.experience.length - 1 ? '\n\n  ─────────────────────────────────────────────────────' : '';
+            return `  <span class="data-label">${exp.title}</span>\n${companyLine}\n  ${exp.desc}${divider}`;
+        }).join('\n');
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">history | grep experience</span>
+
+<span class="data-section">┌─ SYSTEM LIFECYCLE TRACE ────────────────────────────┐</span>
+
+${expLines}
+        `;
+        genericBack.classList.remove('hidden');
+    }
+
+    else if (cmd.includes('ping') || cmd === 'contact' || cmd === '5') {
+        const c = DATA.contact;
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">ping -c 3 contact_gateway</span>
+
+PING contact_gateway (127.0.0.1) 56(84) bytes of data.
+64 bytes from localhost: icmp_seq=1 ttl=64 time=0.042 ms
+64 bytes from localhost: icmp_seq=2 ttl=64 time=0.039 ms
+64 bytes from localhost: icmp_seq=3 ttl=64 time=0.045 ms
+
+--- contact_gateway ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+
+<span class="data-section">┌─ ESTABLISH CONNECTION ────────────────────────────────┐</span>
+
+  <span class="data-label">Email:</span>     <a href="mailto:${c.email}" class="data-link">${c.email}</a>
+  <span class="data-label">GitHub:</span>    <a href="${c.github}" target="_blank" class="data-link">${c.github.replace('https://', '')}</a>
+
+  <span class="data-label">Status:</span>    <span class="data-highlight">${c.status}</span>
+        `;
+        genericBack.classList.remove('hidden');
+    }
+
+    else if (cmd === 'clear' || cmd === 'exit') {
+        output.innerHTML = "Select an option from the menu network to explore architectural systems, codebase repositories, and certifications.";
+        mainMenu.classList.remove('hidden');
+    }
+
+    else if (cmd === 'help') {
+        const helpEntries = Object.entries(DATA.commands.help).map(([key, desc]) =>
+            `  <span class="data-label">${key.padEnd(11)}</span> — ${desc}`
+        ).join('\n');
+        output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">help</span>
+
+<span class="data-section">┌─ AVAILABLE CORE SYSTEM PARAMETERS ──────────────────┐</span>
+
+${helpEntries}
+  <span class="data-label">vnc</span>         — Launch remote desktop (VNC viewer)
+
+<em>Tip: Use ↑ / ↓ arrow keys to navigate command history.</em>
+        `;
+        mainMenu.classList.remove('hidden');
+    }
+
+    else {
+        output.innerHTML = `<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">${rawCmd}</span>\n\n<span style="color: #ff5f56;">bash: command not found: ${rawCmd}. Type 'help' to scan available entry vectors.</span>`;
+        mainMenu.classList.remove('hidden');
+    }
+    scrollToBottom();
+}
+
+function renderProject(key) {
+    const proj = DATA.projects[key];
+    if (!proj) return;
+    const stackStr = proj.stack.map(s => `<span class="data-tech">${s}</span>`).join('  ');
+    const licenseStr = proj.license ? `  <span class="data-label">License:</span>   <span class="data-status">${proj.license}</span> | ` : '';
+    const linesStr = proj.lines ? `  |  <span class="data-highlight">${proj.lines} lines</span>` : '';
+    const mechLines = proj.mechanisms.map(m => `  • <span class="data-highlight">${m.name}</span>\n    ${m.desc}`).join('\n\n');
+
+    output.innerHTML = `
+<span class="prompt">guest@tarantino-systems:~$</span> <span class="command">cat projects/${key}_poc.md</span>
+
+<span class="data-section">┌─ ${proj.title} ─┐</span>
+
+  <span class="data-label">Stack:</span>     ${stackStr}${linesStr}
+  ${licenseStr}<span class="data-status">${proj.status}</span>
+
+<span class="data-section">┌─ ARCHITECTURE OVERVIEW ───────────────────────────────┐</span>
+
+  ${proj.overview}
+
+<span class="data-section">┌─ KEY MECHANISMS BUILT ──────────────────────────────┐</span>
+
+${mechLines}
+    `;
+}
+</script>
+
+</body>
+</html>
